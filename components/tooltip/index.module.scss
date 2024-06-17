@@ -1,0 +1,69 @@
+.msgMain {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+
+    div {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+}
+
+.close {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+
+.wait {
+    position: fixed;
+    top: 0;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgb(12 12 12 / 57%);
+    z-index: 3;
+
+
+    .waitMain {
+        width: 450px;
+        max-width: 95%;
+        border: 1px solid #333;
+        background: #0C0C0CE5;
+        padding: 40px 20px;
+        text-align: center;
+
+
+        .loading {
+            animation: loading 2s linear infinite;
+            margin-bottom: 10px;
+        }
+
+        .waitTitle {
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 24px;
+            margin-bottom: 10px;
+        }
+    }
+
+
+    @keyframes loading {
+        0% {
+            -webkit-transform: rotate(0deg);
+        }
+
+        50% {
+            -webkit-transform: rotate(180deg);
+        }
+
+        100% {
+            -webkit-transform: rotate(360deg);
+        }
+    }
+}
