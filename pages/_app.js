@@ -1,24 +1,21 @@
-import '../styles/globals.scss'
-import { Web3OnboardProvider } from '@web3-onboard/react'
-import injectedModule from '@web3-onboard/injected-wallets'
-import coinbaseWalletModule from '@web3-onboard/coinbase'
-import Onboard from '@web3-onboard/core'
+import "../styles/globals.scss";
+import { Web3OnboardProvider } from "@web3-onboard/react";
+import injectedModule from "@web3-onboard/injected-wallets";
+import coinbaseWalletModule from "@web3-onboard/coinbase";
+import Onboard from "@web3-onboard/core";
 import { UserContextProvider } from "../hook/user";
 
-
 const ethereumRopsten = {
-  id: '0x23294',
-  token: 'ROSE',
-  label: 'Oasis Sapphire',
-  rpcUrl: `https://sapphire.oasis.io`
-}
+  id: "0x23295",
+  token: "TEST",
+  label: "Oasis TEST Sapphire",
+  rpcUrl: `https://testnet.sapphire.oasis.dev/`,
+};
 
-const chains = [ethereumRopsten]
-const coinbaseWalletSdk = coinbaseWalletModule({ darkMode: true })
+const chains = [ethereumRopsten];
+const coinbaseWalletSdk = coinbaseWalletModule({ darkMode: true });
 
-
-const wallets = [injectedModule(), coinbaseWalletSdk]
-
+const wallets = [injectedModule(), coinbaseWalletSdk];
 
 const onboard = Onboard({
   wallets,
@@ -29,16 +26,14 @@ const onboard = Onboard({
     description: "vine",
   },
   connect: {
-    autoConnectLastWallet: true
+    autoConnectLastWallet: true,
   },
-
-})
+});
 
 // const currentState = onboard.state.select();
 // const { unsubscribe } = currentState.subscribe((update) => {
 //   console.log('state update:', update.wallets);
 // })
-
 
 // Ensure the user has selected a wallet
 // const initOnboard = async () => {
@@ -47,9 +42,6 @@ const onboard = Onboard({
 
 // initOnboard();
 
-
-
-
 function MyApp({ Component, pageProps }) {
   return (
     <Web3OnboardProvider web3Onboard={onboard}>
@@ -57,7 +49,7 @@ function MyApp({ Component, pageProps }) {
         <Component {...pageProps} />
       </UserContextProvider>
     </Web3OnboardProvider>
-  )
+  );
 }
 
-export default MyApp 
+export default MyApp;
