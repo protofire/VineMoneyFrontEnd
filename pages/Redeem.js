@@ -259,7 +259,12 @@ export default function Redeem() {
               >
                 Redeem
               </div>
-              {/* <div className='button rightAngle height disable' onClick={() => Redeem()}>Redeem</div> */}
+              <div
+                className="button rightAngle height disable"
+                onClick={() => Redeem()}
+              >
+                Redeem
+              </div>
               <div className={styles.data} style={{ borderTop: "none" }}>
                 <div className={styles.dataItem}>
                   <p>Collateral Price</p>

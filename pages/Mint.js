@@ -131,7 +131,6 @@ export default function Mint() {
       });
       return;
     }
-    console.log("trove", { status });
     if (status == 0 || status == 2 || status == 3) {
       try {
         const mintTx = await borrowerOperationsMint.openTrove(
@@ -383,7 +382,7 @@ export default function Mint() {
                 </div>
                 <div className={styles.dataItem}>
                   <p>+ Mint Fee</p>
-                  <span>10 vUSD</span>
+                  <span>1 vUSD</span>
                 </div>
                 <div className={styles.dataItem}>
                   <p>Liquidation Price</p>
@@ -399,7 +398,7 @@ export default function Mint() {
                 <p>Total Debt</p>
                 <span>
                   {Number(
-                    (debt + Number(debtAmount) + 10).toFixed(2)
+                    (debt + Number(debtAmount) + 1).toFixed(2)
                   ).toLocaleString()}{" "}
                   vUSD
                 </span>

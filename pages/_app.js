@@ -6,10 +6,10 @@ import Onboard from "@web3-onboard/core";
 import { UserContextProvider } from "../hook/user";
 
 const ethereumRopsten = {
-  id: "0x23295",
-  token: "TEST",
-  label: "Oasis TEST Sapphire",
-  rpcUrl: `https://testnet.sapphire.oasis.dev/`,
+  id: "0x23294",
+  token: "ROSE",
+  label: "Oasis Sapphire",
+  rpcUrl: `https://sapphire.oasis.io`,
 };
 
 const chains = [ethereumRopsten];

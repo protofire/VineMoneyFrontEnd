@@ -153,35 +153,35 @@ export const UserContextProvider = ({ children }) => {
   };
 
   const [signer, setSigner] = useState(undefined);
-  // const infuraRPC = "https://sapphire.oasis.io";
-  const infuraRPC = "https://testnet.sapphire.oasis.dev/";
+  const infuraRPC = "https://sapphire.oasis.io";
+  // const infuraRPC = "https://testnet.sapphire.oasis.dev/";
 
   const idoAddr = "0xfc340b4bAA34Ce98c312d4b6B739CCD56f5359c5";
   const usdcAddr = "0x5A80eA8e945312D24a85d1F1C684f092aD43B566";
   const idoAbi = idoHook;
   const tokenAbi = tokenHook;
 
-  const troveManager = "0x562f2b88a22c6c01E8A1c88B26Dc3a64Fca3A10d";
-  const sortedTroves = "0x85fcfB64020C8fbaCcDFA8440956E601F6754b32";
-  const borrowerOperations = "0xF8d2252E223D80426fDFf085e9f4b6eA8af81056";
-  const troveManagerGetters = "0x94Bd7bFDCAe6Cc36455d8bf2FF9238BB1162E507";
-  const priceFeed = "0xD31A358E590D0284B2C6Cd29C52f026beA1259dd";
-  const debtToken = "0x115Cc958d648deBad601cD02a4e72A4d63F42da7";
-  const vineToken = "0x8E3208271FE7C9D7BBDBe8d36693ba9fdc42C2c4";
-  const tokenLocker = "0xB65e7Fc9E10cAEe4B3455107721dc5EfFaE2dd35";
-  const BoostCalculator = "0x1dA4D7aeDD5826575dd837586475B6b4EefEc393";
-  const mockLp = "0xF62a95168F809E24DD3c18643f69434BCC1fAf7C"; //VinelpToken
-  const VineLpTokenPool = "0x9327e5e12F79dC0363f754d95bc7Eec3BA356b8a";
-  const LPPriceOracle = "0xB0c66eB5417F800336558415a1D72323fD874A7A";
-  const stabilityPool = "0xD0093EE34C0b8dD2Ac0755a1DA3b0BA0fD455ddC";
+  const troveManager = "0x06eBC049Fa9d394Aa660E79b94c0278C677ba773";
+  const sortedTroves = "0xfAc36524Eb744fDc7cE6Ac52608D88aA4E90a7fA";
+  const borrowerOperations = "0x942432ad0F0D55AC01C8661619be93d8940A1820";
+  const troveManagerGetters = "0xBf2fe64DCaA032b33e4412798a5DbF9BDafcC05E";
+  const priceFeed = "0xee6A971FECE446AFD6181bACFb1F8Ae5fCa787fc";
+  const debtToken = "0xB0159B1f625d83539D6db40CB2bc3DC4309038Ac";
+  const vineToken = "0xf7E952095be89627e77c85633F7567CfB30f07c1";
+  const tokenLocker = "0x3A2c1D25c2F97E144d43d6B421022F976FcB3D09";
+  const BoostCalculator = "0xCd2327F3631d220972aEdb4d07Ed42efe157CF71";
+  const mockLp = "0xf1E00B2B98d9c796963C4251738f5f6e2b31453d"; //VinelpToken
+  const VineLpTokenPool = "0xE4F88f60f3C3262Be66FDfca40FA9Fbd64Cf7aD9";
+  const LPPriceOracle = "0x6b7BC9dD2b851587863fa5c77636869fe1206d9a";
+  const stabilityPool = "0x6D920d36A6D1948c1d911aCB457b2545c4012ccf";
   const MultiCollateralHintHelpers =
-    "0xb22D92fC3c0760Cb83338f2286c6abb03fE42F4B";
-  const incentiveVoting = "0xE96d7fDE8Fe12315F50627FE1E72fa7A116F60bc";
-  const idovesting = "0xe306605c97da3D5daFe9FeF56Cc95133E0Cb235C"; //iDOTokenVesting
-  const vineVault = "0x39d9d98D56e6832bb6B5870022ED5f11A491404D";
-  const VUSDUSDCLP = "0xc1Ef81E267443E59474596982791D3A58455201F";
-  const usdcPool = "0xF9E586056511E72f2E22A8Aea429CC9d3De89BdD";
-  const wRose = "0xB759a0fbc1dA517aF257D5Cf039aB4D86dFB3b94";
+    "0x195C411887ef06119Efe3DF523D75930863C4172";
+  const incentiveVoting = "0x0f4F2E81eA524a0bEA415187Cf5c98eAfAACF45c";
+  const idovesting = "0xAA854f386fe35983ac5bA8d9998224cdBd89c72c"; //iDOTokenVesting
+  const vineVault = "0xc5cEdeF3c75Bb5b5Ca653A5E937995E29350FadE";
+  const VUSDUSDCLP = "0x2BCD9a9Cc2a49E00cB58b9EE3855dF5bC80dfFee";
+  const usdcPool = "0x7EAAB9F7C992eE3cD1D9F055511Af5741B372124";
+  const wRose = "0x8Bc2B030b299964eEfb5e1e0b36991352E56D2D3";
 
   const BorrowerOperationsAbi = BorrowerOperationsHook;
   const SortedTrovesAbi = SortedTrovesHook;
@@ -452,7 +452,7 @@ export const UserContextProvider = ({ children }) => {
   const [stabilityEarned, setstabilityEarned] = useState(0);
   const [vusdUsdcEarned, setvusdUsdcEarned] = useState(0);
   const getData = async () => {
-    if (account && signInAuth.user) {
+    if (account && signInAuth.user && signInAuthToken.user) {
       getBalance();
       const trove = await troveManagerGettersSigner.getTrove(
         signInAuth,
@@ -518,9 +518,11 @@ export const UserContextProvider = ({ children }) => {
       "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
     );
     setRosePrice(Number(rosePrice) / 1e18);
-    const lpPrice = await lPPriceOracleQuery.getReferenceData("LP", "USD");
+    // const lpPrice = await lPPriceOracleQuery.getReferenceData("LP", "USD");
+    // setLpPrice(Number(lpPrice[0]._hex) / 1e18);
+    // TODO: MOCK FOR NOW
+    setLpPrice(1);
 
-    setLpPrice(Number(lpPrice[0]._hex) / 1e18);
     const wRosebalance = await wRoseQuery.balanceOf(mockLp);
     const wRosebalance2 = await vineTokenQuery.balanceOf(mockLp);
     const vPrice =

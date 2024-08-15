@@ -51,7 +51,7 @@ export default function Header(props) {
           method: "wallet_switchEthereumChain",
           params: [
             {
-              chainId: "0x5aff",
+              chainId: "0x5afe",
             },
           ],
         });
@@ -63,14 +63,14 @@ export default function Header(props) {
               method: "wallet_addEthereumChain",
               params: [
                 {
-                  chainId: "0x5aff",
-                  chainName: "Oasis Testnet Sapphire",
+                  chainId: "0x5afe",
+                  chainName: "Oasis Sapphire",
                   nativeCurrency: {
-                    name: "TEST",
-                    symbol: "TEST",
+                    name: "ROSE",
+                    symbol: "ROSE",
                     decimals: 18,
                   },
-                  rpcUrls: ["https://testnet.sapphire.oasis.dev/"],
+                  rpcUrls: ["https://sapphire.oasis.io"],
                 },
               ],
             });
@@ -153,7 +153,7 @@ export default function Header(props) {
       {
         name: "VineSignature.SignIn",
         version: "1",
-        chainId: 23295,
+        chainId: 23294,
         verifyingContract: troveManagerGetters,
       },
       {
@@ -184,7 +184,7 @@ export default function Header(props) {
       {
         name: "VineSignature.SignIn",
         version: "1",
-        chainId: 23295,
+        chainId: 23294,
         verifyingContract: debtToken,
       },
       {
@@ -230,40 +230,44 @@ export default function Header(props) {
   const [totalLocked, setTotalLocked] = useState(0);
   const [lastUnlockingTime, setLastUnlockingTime] = useState(0);
   const [unlockingStartTime, setUnlockingStartTime] = useState(0);
-  //   const queryData = async () => {
-  //     const unlockingInfo = await idovestingQuery.UnlockingInfo(account);
-  //     setTotalLocked(Number(unlockingInfo.totalLocked._hex) / 1e18);
-  //     const airDrop = new BigNumber(unlockingInfo.airdrop._hex)
-  //       .div(1e18)
-  //       .toFixed();
-  //     setAirDrop(Number(airDrop));
-  //     const unlockingStartTime = await idovestingQuery.unlockingStartTime();
-  //     var timestamp = Date.parse(new Date()) / 1000;
-  //     if (
-  //       Number(airDrop) > 1 &&
-  //       unlockingInfo.isClaimed == false &&
-  //       timestamp > Number(unlockingStartTime._hex)
-  //     ) {
-  //       setShowClaim(true);
-  //     } else {
-  //       setShowClaim(false);
-  //     }
+  const queryData = async () => {
+    if (idovestingQuery && account) {
+      const unlockingInfo = await idovestingQuery.UnlockingInfo(account);
+      setTotalLocked(Number(unlockingInfo.totalLocked._hex) / 1e18);
+      const airDrop = new BigNumber(unlockingInfo.airdrop._hex)
+        .div(1e18)
+        .toFixed();
+      setAirDrop(Number(airDrop));
+      const unlockingStartTime = await idovestingQuery.unlockingStartTime();
+      var timestamp = Date.parse(new Date()) / 1000;
+      if (
+        Number(airDrop) > 1 &&
+        unlockingInfo.isClaimed == false &&
+        timestamp > Number(unlockingStartTime._hex)
+      ) {
+        setShowClaim(true);
+      } else {
+        setShowClaim(false);
+      }
 
-  //     setLastUnlockingTime(Number(unlockingInfo.lastUnlockingTime._hex));
-  //     setUnlockingStartTime(Number(unlockingStartTime._hex));
+      setLastUnlockingTime(Number(unlockingInfo.lastUnlockingTime._hex));
+      setUnlockingStartTime(Number(unlockingStartTime._hex));
 
-  //     const unlockableAmount = await idovestingQuery.getUnlockableAmount(account);
-  //     setUnlockableAmount(Number(unlockableAmount._hex) / 1e18);
-  //   };
+      const unlockableAmount = await idovestingQuery.getUnlockableAmount(
+        account
+      );
+      setUnlockableAmount(Number(unlockableAmount._hex) / 1e18);
+    }
+  };
 
   let timerLoading = useRef(null);
-  //   useEffect(() => {
-  //     queryData();
-  //     timerLoading.current = setInterval(() => {
-  //       queryData();
-  //     }, 2000);
-  //     return () => clearInterval(timerLoading.current);
-  //   }, [account]);
+  useEffect(() => {
+    queryData();
+    timerLoading.current = setInterval(() => {
+      queryData();
+    }, 2000);
+    return () => clearInterval(timerLoading.current);
+  }, [account]);
 
   const [Claimed, setClaimed] = useState(0);
   const [Remaining, setRemaining] = useState(0);
@@ -391,20 +395,20 @@ export default function Header(props) {
               >
                 <span>Earn</span>
               </Link>
-              {/* <Link
+              <Link
                 className={dappMenu == "Reward" ? `${styles.active}` : null}
                 href="/Reward"
                 rel="nofollow noopener noreferrer"
               >
                 <span>Reward</span>
-              </Link> */}
-              {/* <Link
+              </Link>
+              <Link
                 className={dappMenu == "Lock" ? `${styles.active}` : null}
                 href="/Lock"
                 rel="nofollow noopener noreferrer"
               >
                 <span>Lock</span>
-              </Link> */}
+              </Link>
               <Link
                 className={dappMenu == "Redeem" ? `${styles.active}` : null}
                 href="/Redeem"
@@ -412,13 +416,13 @@ export default function Header(props) {
               >
                 <span>Redeem</span>
               </Link>
-              {/* <Link
+              <Link
                 className={dappMenu == "Vote" ? `${styles.active}` : null}
                 href="/Vote"
                 rel="nofollow noopener noreferrer"
               >
                 <span>Vote</span>
-              </Link> */}
+              </Link>
             </div>
           ) : (
             <div className={styles.list}>
@@ -464,13 +468,25 @@ export default function Header(props) {
                 </div>
               </div>
               <span onClick={() => goMenu("faq")}>FAQ</span>
-              {/* <div className="menu-container">
-                                <span>IDO</span>
-                                <div className="dropdown-menu">
-                                    <Link href="/ido-countdown" rel="nofollow noopener noreferrer" style={{ "width": "135px" }}>IDO Countdown</Link>
-                                    <Link href="/ido-raffle" rel="nofollow noopener noreferrer" style={{ "width": "135px" }}>Whitelist Raffle</Link>
-                                </div>
-                            </div> */}
+              <div className="menu-container">
+                <span>IDO</span>
+                <div className="dropdown-menu">
+                  <Link
+                    href="/ido-countdown"
+                    rel="nofollow noopener noreferrer"
+                    style={{ width: "135px" }}
+                  >
+                    IDO Countdown
+                  </Link>
+                  <Link
+                    href="/ido-raffle"
+                    rel="nofollow noopener noreferrer"
+                    style={{ width: "135px" }}
+                  >
+                    Whitelist Raffle
+                  </Link>
+                </div>
+              </div>
               <Link
                 target="_blank"
                 href="/Vine_Money_Disclaimer.pdf"
