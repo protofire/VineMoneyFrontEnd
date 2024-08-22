@@ -360,7 +360,7 @@ export default function Vote() {
               </div>
             </div>
             <div className={styles.value}>
-              <span>Locked VINE</span>
+              <span>Locked bitGOV</span>
               <div>
                 <p>{formatNum(accountLock)}</p>
                 <span className={styles.span}>
@@ -387,8 +387,8 @@ export default function Vote() {
             <div className={styles.title}>
               <p>Governance & Emissions voting</p>
               <div>
-                Incentivize liquidity to an action, such as minting vUSD or lock
-                VINE with a specific collateral. Learn more
+                Incentivize liquidity to an action, such as minting bitUSD or
+                lock bitGOV with a specific collateral. Learn more
               </div>
             </div>
             <div className={`${styles.dataInfo2} ${styles.voteData}`}>
@@ -428,7 +428,9 @@ export default function Vote() {
                   <div>Pool</div>
                   <div className={styles.center}>My Votes</div>
                   <div className={styles.center}>Votes</div>
-                  <div className={styles.center}>Estimated VINE Emissions</div>
+                  <div className={styles.center}>
+                    Estimated bitGOV Emissions
+                  </div>
                   {/* <div className={styles.center}>Vote Ratio</div> */}
                   <div></div>
                 </div>
@@ -441,7 +443,7 @@ export default function Vote() {
                   >
                     <div>
                       <img src="/dapp/vUSD.svg" alt="icon" />
-                      vUSD Debt
+                      bitUSD Debt
                     </div>
                     <div className={styles.center}>
                       {(votes1 / 100).toFixed(2)}%
@@ -530,7 +532,7 @@ export default function Vote() {
                   >
                     <div>
                       <img src="/dapp/vUSD.svg" alt="icon" />
-                      vUSD Minting
+                      bitUSD Minting
                     </div>
                     <div className={styles.center}>
                       {(votes2 / 100).toFixed(2)}%
@@ -708,7 +710,7 @@ export default function Vote() {
                   >
                     <div>
                       <img src="/dapp/vineArose.svg" alt="icon" />
-                      VINE/ROSE LP
+                      bitGOV/ROSE LP
                     </div>
                     <div className={styles.center}>
                       {(votes3 / 100).toFixed(2)}%
@@ -796,7 +798,7 @@ export default function Vote() {
                   >
                     <div>
                       <img src="/dapp/usdc.svg" alt="icon" />
-                      vUSD/USDC LP
+                      bitUSD/USDC LP
                     </div>
                     <div className={styles.center}>
                       {(votes4 / 100).toFixed(2)}%

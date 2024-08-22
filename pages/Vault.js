@@ -274,7 +274,9 @@ export default function Vault() {
       setCurrentWaitInfo({
         type: "loading",
         info:
-          "Repay " + Number(debtAmount.toFixed(4)).toLocaleString() + " $vUSD",
+          "Repay " +
+          Number(debtAmount.toFixed(4)).toLocaleString() +
+          " $bitUSD",
       });
       setCurrentState(true);
       const result = await repayTx.wait();
@@ -305,11 +307,11 @@ export default function Vault() {
     if (Number(vUSDbalance) < Number(debt)) {
       tooltip.error({
         content:
-          "You do not have enough vUSD in your wallet to repay your debt. You require an additional " +
+          "You do not have enough bitUSD in your wallet to repay your debt. You require an additional " +
           Number(
             (Number(debt) - Number(vUSDbalance)).toFixed(4)
           ).toLocaleString() +
-          " $vUSD.",
+          " $bitUSD.",
         duration: 5000,
       });
       return;
@@ -377,7 +379,7 @@ export default function Vault() {
               <p>
                 Boost the value of your $ROSE by depositing it into Vault to
                 elevate your collateral ratio and unlock its full potential via
-                VINE protocol.
+                Bit protocol.
               </p>
             </div>
           )}
@@ -409,7 +411,7 @@ export default function Vault() {
                     className={operateType == "Repay" ? styles.active : ""}
                     onClick={() => changeOperateType("Repay")}
                   >
-                    Repay vUSD
+                    Repay bitUSD
                   </div>
                   <div
                     className={operateType == "Close" ? styles.active : ""}
@@ -485,11 +487,11 @@ export default function Vault() {
               ) : buttonName == "Repay" ? (
                 <>
                   <div className={styles.miniTitle}>
-                    <span>{operateType} vUSD</span>
+                    <span>{operateType} bitUSD</span>
                     <span style={{ fontSize: "12px" }}>
                       Balance{" "}
                       {Number(Number(vUSDbalance).toFixed(4)).toLocaleString()}{" "}
-                      vUSD
+                      bitUSD
                     </span>
                   </div>
                   <div className="inputTxt3">
@@ -502,7 +504,7 @@ export default function Vault() {
                       onChange={changeDebtAmount.bind(this)}
                       value={debtAmount}
                     ></input>
-                    <span>$vUSD</span>
+                    <span>$bitUSD</span>
                   </div>
                 </>
               ) : null}
@@ -568,7 +570,7 @@ export default function Vault() {
                   >
                     <span>Your Total Debt</span>
                     <span>
-                      {Number(Number(debt).toFixed(4)).toLocaleString()} $vUSD
+                      {Number(Number(debt).toFixed(4)).toLocaleString()} $bitUSD
                     </span>
                   </div>
                   <div
@@ -588,7 +590,7 @@ export default function Vault() {
                           Number(vUSDbalance).toFixed(4)
                         ).toLocaleString()}
                       </span>{" "}
-                      $vUSD
+                      $bitUSD
                     </div>
                   </div>
                 </>
@@ -634,14 +636,14 @@ export default function Vault() {
               Number(vUSDbalance) < Number(debt) ? (
                 <div className={styles.closeTip}>
                   <p>
-                    You do not have enough vUSD in your wallet to repay your
+                    You do not have enough bitUSD in your wallet to repay your
                     debt. You require an additional{" "}
                     <span>
                       {Number(
                         (Number(debt) - Number(vUSDbalance)).toFixed(4)
                       ).toLocaleString()}
                     </span>{" "}
-                    $vUSD.
+                    $bitUSD.
                   </p>
                 </div>
               ) : null
@@ -655,7 +657,7 @@ export default function Vault() {
                   </span>
                 </div>
                 <div className={styles.dataItem}>
-                  <p>Minted vUSD</p>
+                  <p>Minted bitUSD</p>
                   <span>${Number(debt.toFixed(4)).toLocaleString()}</span>
                 </div>
                 <div className={styles.dataItem}>
@@ -684,7 +686,7 @@ export default function Vault() {
               />
             </div>
             <div className={styles.tipDesc}>
-              A minimum of 10 vUSD will be minted when depositing $ROSE.
+              A minimum of 10 bitUSD will be minted when depositing $ROSE.
             </div>
             <div className={styles.button}>
               <span className="button" onClick={() => Deposit()}>
@@ -716,13 +718,13 @@ export default function Vault() {
               You are about to close your $ROSE account
             </div>
             <p className={styles.closeDesc}>
-              You will need to repay any outstanding vUSD debt:
+              You will need to repay any outstanding bitUSD debt:
             </p>
             <div className={styles.closeCoin}>
               <p>{Number(Number(debt).toFixed(4)).toLocaleString()}</p>
               <div>
                 <img src="/dapp/vUSD.svg" alt="vUSD"></img>
-                $vUSD
+                $bitUSD
               </div>
             </div>
             <p className={styles.closeDesc}>

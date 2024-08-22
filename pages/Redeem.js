@@ -165,7 +165,8 @@ export default function Redeem() {
       );
       setCurrentWaitInfo({
         type: "loading",
-        info: "Redeem " + Number(amount.toFixed(4)).toLocaleString() + " vUSD",
+        info:
+          "Redeem " + Number(amount.toFixed(4)).toLocaleString() + " bitUSD",
       });
       setCurrentState(true);
       const result = await tx.wait();
@@ -213,14 +214,14 @@ export default function Redeem() {
       <div className="dappBg">
         <div className={`${styles.Redeem} ${"dappMain"}`}>
           <div className={styles.title}>
-            <p>Redeem vUSD for $ROSE</p>
-            <span>1 vUSD is always redeemable for $1 of collateral.</span>
+            <p>Redeem bitUSD for $ROSE</p>
+            <span>1 bitUSD is always redeemable for $1 of collateral.</span>
           </div>
           <div className={styles.redeemMain}>
             <div className={styles.inputMain}>
               <div className="balance">
-                <p>Redeem vUSD</p>
-                <span>Balance {formatNum(vUSDbalance)} vUSD</span>
+                <p>Redeem bitUSD</p>
+                <span>Balance {formatNum(vUSDbalance)} bitUSD</span>
               </div>
               <div className="inputTxt2">
                 <div>
@@ -234,7 +235,7 @@ export default function Redeem() {
                     value={amount}
                   />
                 </div>
-                <span className="font_14 gray">vUSD</span>
+                <span className="font_14 gray">bitUSD</span>
               </div>
               <div className="changeBalance" style={{ marginTop: "12px" }}>
                 <span onClick={() => changeAmountVaule(0.25)}>25%</span>
@@ -290,7 +291,7 @@ export default function Redeem() {
                 </div>
                 <div className={styles.dataItem}>
                   <p>Actual Redemption Amount</p>
-                  <span>{formatNum(amount)} vUSD</span>
+                  <span>{formatNum(amount)} bitUSD</span>
                 </div>
               </div>
             </div>

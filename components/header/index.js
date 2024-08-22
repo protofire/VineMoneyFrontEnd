@@ -292,7 +292,7 @@ export default function Header(props) {
         setCurrentWaitInfo({
           type: "loading",
           info:
-            "Claim " + Number(airDrop.toFixed(4)).toLocaleString() + " $VINE",
+            "Claim " + Number(airDrop.toFixed(4)).toLocaleString() + " $bitGOV",
         });
         setCurrentState(true);
         const result = await idoTx.wait();
@@ -328,7 +328,7 @@ export default function Header(props) {
       const idoTx = await idovestingMain.vest(account);
       setCurrentWaitInfo({
         type: "loading",
-        info: "Claim " + formatNum(unlockableAmount) + " $VINE",
+        info: "Claim " + formatNum(unlockableAmount) + " $bitGOV",
       });
       setCurrentState(true);
       const result = await idoTx.wait();
@@ -356,10 +356,10 @@ export default function Header(props) {
   return (
     <>
       <Head>
-        <title>Vine | Privacy Focused Omnichain Stablecoin</title>
+        <title>Bit Protocol | Privacy Focused Omnichain Stablecoin</title>
         <meta
           name="description"
-          content="Vine | Privacy Focused Omnichain Stablecoin"
+          content="Bit Protocol | Privacy Focused Omnichain Stablecoin"
         />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -367,7 +367,7 @@ export default function Header(props) {
         <div className={styles.headMain} id="vine">
           <Link href="/" className={styles.logo}>
             <img src="/logo.png" alt="logo"></img>
-            VINE
+            Bit Protocol
             {type == "dapp" ? (
               <span className="tvl">TVL:${formatNum(totalTvl)}</span>
             ) : null}
@@ -386,7 +386,7 @@ export default function Header(props) {
                 href="/Mint"
                 rel="nofollow noopener noreferrer"
               >
-                <span>Mint vUSD</span>
+                <span>Mint bitUSD</span>
               </Link>
               <Link
                 className={dappMenu == "Earn" ? `${styles.active}` : null}
@@ -575,7 +575,7 @@ export default function Header(props) {
             </div>
             <div className={styles.h5Item}>
               <Link href="/Mint" rel="nofollow noopener noreferrer">
-                <span>Mint vUSD</span>
+                <span>Mint bitUSD</span>
               </Link>
             </div>
             <div className={styles.h5Item}>
@@ -758,11 +758,11 @@ export default function Header(props) {
         <div className="promptBox">
           <div className="boxMain">
             <div className="boxInfo">
-              Vine is the first and only encrypted DeFi protocol for Web3 that
-              provides intelligent privacy features. Only your personal
-              signature grants access to individual data. To streamline the
-              signing process and enhance user experience, you are required to
-              use EIP-712 to "sign in" once per day.
+              Bit Protocol is the first and only encrypted DeFi protocol for
+              Web3 that provides intelligent privacy features. Only your
+              personal signature grants access to individual data. To streamline
+              the signing process and enhance user experience, you are required
+              to use EIP-712 to "sign in" once per day.
             </div>
             <div className="button rightAngle" onClick={() => signIn()}>
               sign in
@@ -775,8 +775,8 @@ export default function Header(props) {
         <div className="promptBox">
           <div className="boxMain">
             <div className="boxInfo">
-              Please sign in your wallet's pop-up to allow Vine to access your
-              vUSD balance.
+              Please sign in your wallet's pop-up to allow Bit Protocol to
+              access your bitUSD balance.
             </div>
             <div className="button rightAngle" onClick={() => signInToken()}>
               sign in
@@ -791,7 +791,7 @@ export default function Header(props) {
             <div className="infoTitle">
               <div>
                 <img className="vUSD" src="/dapp/vUSD.svg" alt="vUSD" />
-                <p>Claim $VINE</p>
+                <p>Claim $bitGOV</p>
               </div>
               <div className="close">
                 <img
@@ -804,19 +804,19 @@ export default function Header(props) {
             <div className="data">
               <div className="dataItem">
                 <p>Total available</p>
-                <span>{formatNum(totalLocked)} $VINE</span>
+                <span>{formatNum(totalLocked)} $bitGOV</span>
               </div>
               <div className="dataItem">
                 <p>Claimed</p>
-                <span>{formatNum(Claimed)} $VINE</span>
+                <span>{formatNum(Claimed)} $bitGOV</span>
               </div>
               <div className="dataItem">
                 <p>Remaining</p>
-                <span>{formatNum(Remaining)} $VINE</span>
+                <span>{formatNum(Remaining)} $bitGOV</span>
               </div>
               <div className="dataItem">
                 <p>Claimable</p>
-                <span>{formatNum(unlockableAmount)} $VINE</span>
+                <span>{formatNum(unlockableAmount)} $bitGOV</span>
               </div>
               <div
                 className={

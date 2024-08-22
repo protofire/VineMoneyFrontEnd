@@ -124,9 +124,9 @@ export default function Mint() {
     if (!collAmount || !debtAmount) {
       return;
     }
-    if (Number(debtAmount) < 10) {
+    if (Number(debtAmount) < 1) {
       tooltip.error({
-        content: "A Minimum Debt of 10 vUSD is Required!",
+        content: "A Minimum Debt of 1 bitUSD is Required!",
         duration: 5000,
       });
       return;
@@ -146,7 +146,9 @@ export default function Mint() {
         setCurrentWaitInfo({
           type: "loading",
           info:
-            "Mint " + Number(debtAmount.toFixed(4)).toLocaleString() + " $vUSD",
+            "Mint " +
+            Number(debtAmount.toFixed(4)).toLocaleString() +
+            " $bitUSD",
         });
         setCurrentState(true);
         const mintResult = await mintTx.wait();
@@ -187,7 +189,9 @@ export default function Mint() {
         setCurrentWaitInfo({
           type: "loading",
           info:
-            "Mint " + Number(debtAmount.toFixed(4)).toLocaleString() + " $vUSD",
+            "Mint " +
+            Number(debtAmount.toFixed(4)).toLocaleString() +
+            " $bitUSD",
         });
         setCurrentState(true);
         const mintResult = await mintTx.wait();
@@ -220,17 +224,18 @@ export default function Mint() {
       <div className="dappBg">
         <div className={`${styles.Mint} ${"dappMain"}`}>
           <div className={styles.topType}>
-            <h3>Mint vUSD</h3>
+            <h3>Mint bitUSD</h3>
             <p>
-              Deposit your $ROSE as collateral in Vault to mint vUSD. Stake vUSD
-              or provide liquidity to earn rewards using the VINE Protocol.
+              Deposit your $ROSE as collateral in Vault to mint bitUSD. Stake
+              bitUSD or provide liquidity to earn rewards using the Bit
+              Protocol.
             </p>
           </div>
           <DepositsAndDebt></DepositsAndDebt>
           <div className={styles.mintMain}>
             <div className={styles.CoinType}>
-              <img src="/dapp/vUSD.svg" alt="vUSD" />
-              $vUSD
+              <img src="/dapp/vUSD.svg" alt="bitUSD" />
+              $bitUSD
             </div>
             <div className={styles.enterAmount}>
               <div className={styles.miniTitle}>
@@ -307,9 +312,10 @@ export default function Mint() {
             </div>
             <div className={styles.enterAmount}>
               <div className={styles.miniTitle}>
-                <span>Mint vUSD</span>
+                <span>Mint bitUSD</span>
                 <span style={{ fontSize: "12px" }}>
-                  max {Number(Number(debtMax).toFixed(2)).toLocaleString()} vUSD
+                  max {Number(Number(debtMax).toFixed(2)).toLocaleString()}{" "}
+                  bitUSD
                 </span>
               </div>
               <div className="inputTxt3">
@@ -322,7 +328,7 @@ export default function Mint() {
                   onChange={changeDebtAmount.bind(this)}
                   value={debtAmount}
                 ></input>
-                <span>$vUSD</span>
+                <span>$bitUSD</span>
               </div>
               <div className="changeBalance">
                 <span onClick={() => changeDebtVaule(0.25)}>25%</span>
@@ -348,10 +354,10 @@ export default function Mint() {
                   </span>
                 </div>
                 <div className={styles.dataItem}>
-                  <p>+ Minted vUSD</p>
+                  <p>+ Minted bitUSD</p>
                   <div>
                     <span>
-                      {Number(Number(debt).toFixed(2)).toLocaleString()} vUSD
+                      {Number(Number(debt).toFixed(2)).toLocaleString()} bitUSD
                     </span>
                     {collAmount && debtAmount ? (
                       <span>
@@ -360,7 +366,7 @@ export default function Mint() {
                         {Number(
                           (Number(debtAmount) + Number(debt)).toFixed(2)
                         ).toLocaleString()}{" "}
-                        vUSD
+                        bitUSD
                       </span>
                     ) : null}
                   </div>
@@ -381,9 +387,15 @@ export default function Mint() {
                   </div>
                 </div>
                 <div className={styles.dataItem}>
-                  <p>+ Mint Fee</p>
-                  <span>1 vUSD</span>
+                  <span>+ Mint Fee </span>
+                  <span>0.5%</span>
                 </div>
+                {status == 0 || status == 2 || status == 3 ? (
+                  <div className={styles.dataItem}>
+                    <p>+ Liquidation Fee</p>
+                    <span>1 bitUSD</span>
+                  </div>
+                ) : null}
                 <div className={styles.dataItem}>
                   <p>Liquidation Price</p>
                   <span>
@@ -398,9 +410,9 @@ export default function Mint() {
                 <p>Total Debt</p>
                 <span>
                   {Number(
-                    (debt + Number(debtAmount) + 1).toFixed(2)
+                    (debt + Number(debtAmount)).toFixed(2)
                   ).toLocaleString()}{" "}
-                  vUSD
+                  bitUSD
                 </span>
               </div>
             </div>

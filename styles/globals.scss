@@ -53,38 +53,38 @@
 }
 
 @font-face {
-  font-family: "Orbitron";
-  src: url(./font/Orbitron-Regular.ttf);
+  font-family: "Inter";
+  src: url(./font/Inter-Regular.ttf);
   font-weight: 400;
 }
 
 @font-face {
-  font-family: "Orbitron";
-  src: url(./font/Orbitron-Medium.ttf);
+  font-family: "Inter";
+  src: url(./font/Inter-Medium.ttf);
   font-weight: 500;
 }
 
 @font-face {
-  font-family: "Orbitron";
-  src: url(./font/Orbitron-SemiBold.ttf);
+  font-family: "Inter";
+  src: url(./font/Inter-SemiBold.ttf);
   font-weight: 600;
 }
 
 @font-face {
-  font-family: "Orbitron";
-  src: url(./font/Orbitron-Bold.ttf);
+  font-family: "Inter";
+  src: url(./font/Inter-Bold.ttf);
   font-weight: 700;
 }
 
 @font-face {
-  font-family: "Orbitron";
-  src: url(./font/Orbitron-ExtraBold.ttf);
+  font-family: "Inter";
+  src: url(./font/Inter-ExtraBold.ttf);
   font-weight: 800;
 }
 
 @font-face {
-  font-family: "Orbitron";
-  src: url(./font/Orbitron-Black.ttf);
+  font-family: "Inter";
+  src: url(./font/Inter-Black.ttf);
   font-weight: 900;
 }
 
@@ -92,9 +92,9 @@ html,
 body {
   padding: 0;
   margin: 0;
-  font-family: "Orbitron", sans-serif;
+  font-family: "Inter", sans-serif;
   background: #010101;
-  color: #F2F2F2;
+  color: #f2f2f2;
   overflow-x: hidden;
 }
 
@@ -126,7 +126,6 @@ a {
   background: black;
 }
 
-
 .main {
   max-width: 95%;
   margin: auto;
@@ -138,7 +137,7 @@ a {
   font-size: 12px;
   font-weight: 500;
   border-radius: 6px;
-  border: 1px solid #509D7B;
+  border: 1px solid #509d7b;
   padding: 10px 16px;
   cursor: pointer;
 }
@@ -149,7 +148,7 @@ a {
   justify-content: center;
   align-items: center;
   border-radius: 6px;
-  background: #509D7B;
+  background: #509d7b;
   font-size: 16px;
   font-style: normal;
   font-weight: 500;
@@ -175,7 +174,6 @@ a {
     opacity: 0.8;
   }
 
-
   &.soon {
     &:hover {
       background: gray;
@@ -191,7 +189,7 @@ a {
   }
 
   &.disable {
-    background: #0C0C0C;
+    background: #0c0c0c;
     color: gray;
   }
 
@@ -200,21 +198,14 @@ a {
   }
 
   &.noactive {
-    color: #BDBDBD;
+    color: #bdbdbd;
     border: 0.5px solid #333;
     background: none;
   }
 }
 
-
-
-
-
-
-
-
 .font_20 {
-  color: #F2F2F2;
+  color: #f2f2f2;
   font-size: 20px;
   font-style: normal;
   font-weight: 700;
@@ -222,9 +213,8 @@ a {
   letter-spacing: -0.4px;
 }
 
-
 .font_16 {
-  color: #F2F2F2;
+  color: #f2f2f2;
   font-size: 16px;
   font-style: normal;
   font-weight: 700;
@@ -232,7 +222,7 @@ a {
 }
 
 .font_14 {
-  color: #F2F2F2;
+  color: #f2f2f2;
   font-size: 14px;
   font-style: normal;
   font-weight: 500;
@@ -266,11 +256,11 @@ a {
 }
 
 .gray {
-  color: #BDBDBD;
+  color: #bdbdbd;
 }
 
 .green {
-  color: #509D7B;
+  color: #509d7b;
 }
 
 .font_12_700 {
@@ -281,7 +271,7 @@ a {
 
 .inputTxt {
   border: 1px solid #333;
-  background: #0C0C0C;
+  background: #0c0c0c;
   box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
   display: flex;
   height: 40px;
@@ -293,7 +283,7 @@ a {
     background: #fff0;
     border: none;
     color: #fff;
-    font-family: 'Orbitron';
+    font-family: "Inter";
     width: 100%;
   }
 
@@ -307,19 +297,19 @@ a {
   }
 
   ::-webkit-input-placeholder {
-    color: #D4D4D4;
+    color: #d4d4d4;
   }
 
   ::-moz-placeholder {
-    color: #D4D4D4;
+    color: #d4d4d4;
   }
 
   :-ms-input-placeholder {
-    color: #D4D4D4;
+    color: #d4d4d4;
   }
 
   input:-moz-placeholder {
-    color: #D4D4D4;
+    color: #d4d4d4;
   }
 }
 
@@ -328,14 +318,14 @@ a {
   justify-content: space-between;
   align-items: center;
   border: 1px solid #333;
-  background: #0C0C0C;
+  background: #0c0c0c;
   box-shadow: 0px 1px 2px 0px rgba(16, 24, 40, 0.05);
   padding: 8px;
 
   input {
     background: #fff0;
     border: none;
-    font-family: 'Orbitron';
+    font-family: "Inter";
     width: 100%;
     font-size: 18px;
     font-weight: 500;
@@ -353,19 +343,19 @@ a {
   }
 
   ::-webkit-input-placeholder {
-    color: #D4D4D4;
+    color: #d4d4d4;
   }
 
   ::-moz-placeholder {
-    color: #D4D4D4;
+    color: #d4d4d4;
   }
 
   :-ms-input-placeholder {
-    color: #D4D4D4;
+    color: #d4d4d4;
   }
 
   input:-moz-placeholder {
-    color: #D4D4D4;
+    color: #d4d4d4;
   }
 }
 
@@ -379,7 +369,7 @@ a {
   input {
     background: #fff0;
     border: none;
-    font-family: 'Orbitron';
+    font-family: "Inter";
     width: 100%;
     font-size: 18px;
     font-weight: 800;
@@ -403,19 +393,19 @@ a {
   }
 
   ::-webkit-input-placeholder {
-    color: #D4D4D4;
+    color: #d4d4d4;
   }
 
   ::-moz-placeholder {
-    color: #D4D4D4;
+    color: #d4d4d4;
   }
 
   :-ms-input-placeholder {
-    color: #D4D4D4;
+    color: #d4d4d4;
   }
 
   input:-moz-placeholder {
-    color: #D4D4D4;
+    color: #d4d4d4;
   }
 }
 
@@ -429,7 +419,7 @@ input[type="radio"]::before {
   display: block;
   border-radius: 50%;
   background-color: #fff;
-  border: 2px solid #509D7B;
+  border: 2px solid #509d7b;
 }
 
 input[type="radio"]:checked::after {
@@ -442,7 +432,7 @@ input[type="radio"]:checked::after {
   display: block;
   border-radius: 50%;
   visibility: visible;
-  background-color: #509D7B;
+  background-color: #509d7b;
 }
 
 .changeBalance {
@@ -459,7 +449,7 @@ input[type="radio"]:checked::after {
     font-weight: 400;
     line-height: 20px;
     padding: 5px 0;
-    color: #BDBDBD;
+    color: #bdbdbd;
     cursor: pointer;
 
     &:hover {
@@ -489,8 +479,6 @@ input[type="radio"]:checked::after {
     }
   }
 }
-
-
 
 .tooltip-container {
   position: relative;
@@ -534,7 +522,6 @@ input[type="radio"]:checked::after {
   display: inline-block;
   z-index: 2;
 }
-
 
 .dropdown-menu {
   position: absolute;
@@ -595,7 +582,6 @@ input[type="radio"]:checked::after {
   cursor: pointer;
   z-index: 99999999;
 
-
   .error {
     // background: #fff;
     // border: 2px solid #812E1B;
@@ -609,18 +595,18 @@ input[type="radio"]:checked::after {
   }
 }
 
-.message>div {
+.message > div {
   font-weight: 400;
   font-size: 14px;
   line-height: 20px;
   letter-spacing: -0.15px;
-  color: #24292F;
+  color: #24292f;
   border-radius: 6px;
   padding: 15px;
   font-weight: 600;
   border: 1px solid #333;
   backdrop-filter: blur(20px);
-  background: #1A1A1A;
+  background: #1a1a1a;
   color: #fff;
 }
 
@@ -673,14 +659,14 @@ input[type="radio"]:checked::after {
   margin-bottom: 4px;
 
   p {
-    color: #BDBDBD;
+    color: #bdbdbd;
     font-size: 14px;
     font-weight: 500;
     line-height: 20px;
   }
 
   span {
-    color: #BDBDBD;
+    color: #bdbdbd;
     font-size: 12px;
     font-weight: 600;
     line-height: 20px;
@@ -689,8 +675,8 @@ input[type="radio"]:checked::after {
 
 .button_border {
   border-radius: 6px;
-  border: 1px solid #509D7B;
-  color: #F2F2F2;
+  border: 1px solid #509d7b;
+  color: #f2f2f2;
   font-size: 12px;
   font-weight: 500;
   line-height: 28px;
@@ -705,7 +691,7 @@ input[type="radio"]:checked::after {
   &.disable {
     border-radius: 4px;
     border: 1px solid #333;
-    background: #0C0C0C;
+    background: #0c0c0c;
     color: gray;
   }
 }
@@ -718,18 +704,17 @@ input[type="radio"]:checked::after {
   text-align: center;
   padding: 10px;
   cursor: pointer;
-  color: #BDBDBD;
+  color: #bdbdbd;
 
   &:hover {
     opacity: 0.9;
   }
 
   &.active {
-    background: #509D7B;
-    color: #F2F2F2;
+    background: #509d7b;
+    color: #f2f2f2;
   }
 }
-
 
 .promptBox {
   position: fixed;
@@ -739,16 +724,15 @@ input[type="radio"]:checked::after {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: rgba(12, 12, 12, 0.90);
+  background: rgba(12, 12, 12, 0.9);
   z-index: 3;
 
   .boxMain {
     width: 480px;
     max-width: 95%;
     border: 1px solid #333;
-    background: #0C0C0CE5;
+    background: #0c0c0ce5;
     padding: 20px;
-
 
     .boxInfo {
       font-size: 16px;
@@ -767,8 +751,6 @@ input[type="radio"]:checked::after {
       cursor: pointer;
     }
   }
-
-
 }
 
 .infoTip {
@@ -779,14 +761,14 @@ input[type="radio"]:checked::after {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: rgba(12, 12, 12, 0.90);
+  background: rgba(12, 12, 12, 0.9);
   z-index: 3;
 
   .info {
     width: 480px;
     max-width: 95%;
     border: 1px solid #333;
-    background: #0C0C0CE5;
+    background: #0c0c0ce5;
     padding: 20px;
 
     .close {
@@ -820,7 +802,6 @@ input[type="radio"]:checked::after {
         gap: 10px;
         align-items: center;
 
-
         p {
           width: 100%;
           font-size: 20px;
@@ -848,21 +829,19 @@ input[type="radio"]:checked::after {
         padding: 8px 0;
 
         p {
-          color: #BDBDBD;
+          color: #bdbdbd;
           font-size: 14px;
           font-weight: 500;
         }
 
         span {
-          color: #BDBDBD;
+          color: #bdbdbd;
           font-size: 14px;
           font-weight: 600;
         }
       }
     }
   }
-
-
 }
 
 .h5user {
@@ -872,11 +851,10 @@ input[type="radio"]:checked::after {
 .tvl {
   font-size: 14px;
   letter-spacing: 1px;
-  color: #509D7B;
+  color: #509d7b;
 }
 
-@media screen and (max-width:798px) {
-
+@media screen and (max-width: 798px) {
   .h5user {
     display: flex;
     padding: 16px;

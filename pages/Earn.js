@@ -49,7 +49,7 @@ export default function Earn() {
 
   const [showEarnMain, setShowEarnMain] = useState(false);
   const [changeType, setChangeType] = useState("Mint");
-  const [coin, setCoin] = useState("vUSD");
+  const [coin, setCoin] = useState("bitUSD");
   const [typeName, setTypeName] = useState("");
   const [maxBalance, setMaxBalance] = useState(0);
   const [buttonName, setButtonName] = useState("Stake");
@@ -62,12 +62,12 @@ export default function Earn() {
 
   const changeManage = (value) => {
     setTypeName(value);
-    if (value == "VINE/ROSE LP") {
+    if (value == "bitGOV/ROSE LP") {
       changeTypeCoin("Stake", "LP");
-    } else if (value == "vUSD/USDC LP") {
+    } else if (value == "bitUSD/USDC LP") {
       changeTypeCoin("Stake", "LP");
     } else {
-      changeTypeCoin("Deposit", "vUSD");
+      changeTypeCoin("Deposit", "bitUSD");
     }
     setShowEarnMain(true);
   };
@@ -225,13 +225,13 @@ export default function Earn() {
   ]);
 
   useEffect(() => {
-    if (typeName == "VINE/ROSE LP") {
+    if (typeName == "bitGOV/ROSE LP") {
       if (changeType == "Stake") {
         setMaxBalance(Number(stakeLpBalance));
       } else {
         setMaxBalance(Number(unStakeLpBalance));
       }
-    } else if (typeName == "vUSD/USDC LP") {
+    } else if (typeName == "bitUSD/USDC LP") {
       if (changeType == "Stake") {
         setMaxBalance(Number(stakeLpBalance2));
       } else {
@@ -259,7 +259,7 @@ export default function Earn() {
 
   useEffect(() => {
     if (changeType == "Stake") {
-      if (typeName == "VINE/ROSE LP") {
+      if (typeName == "bitGOV/ROSE LP") {
         if (Number(amount) > Number(allowance)) {
           setButtonName("Approve");
         } else {
@@ -280,9 +280,9 @@ export default function Earn() {
   const [tvl, setTvl] = useState(0);
   useEffect(() => {
     let num = 0;
-    if (typeName == "VINE/ROSE LP") {
+    if (typeName == "bitGOV/ROSE LP") {
       num = Number(mockLpBanace) * lpPrice;
-    } else if (typeName == "vUSD/USDC LP") {
+    } else if (typeName == "bitUSD/USDC LP") {
       num = Number(VUSDLpBanace) * 2;
     } else {
       num = Number(stabilityPoolBanace) + Number(totalRose) * rosePrice;
@@ -503,7 +503,8 @@ export default function Earn() {
       );
       setCurrentWaitInfo({
         type: "loading",
-        info: "Deposit " + Number(amount.toFixed(4)).toLocaleString() + " vUSD",
+        info:
+          "Deposit " + Number(amount.toFixed(4)).toLocaleString() + " bitUSD",
       });
       setCurrentState(true);
       const result = await tx.wait();
@@ -536,7 +537,7 @@ export default function Earn() {
       setCurrentWaitInfo({
         type: "loading",
         info:
-          "Withdraw " + Number(amount.toFixed(4)).toLocaleString() + " vUSD",
+          "Withdraw " + Number(amount.toFixed(4)).toLocaleString() + " bitUSD",
       });
       setCurrentState(true);
       const result = await tx.wait();
@@ -566,7 +567,7 @@ export default function Earn() {
       const tx = await stabilityPoolMain.claimCollateralGains(account, [0]);
       setCurrentWaitInfo({
         type: "loading",
-        info: "Claim " + Number(amount.toFixed(4)).toLocaleString() + " vUSD",
+        info: "Claim " + Number(amount.toFixed(4)).toLocaleString() + " bitUSD",
       });
       setCurrentState(true);
       const result = await tx.wait();
@@ -592,7 +593,7 @@ export default function Earn() {
   };
 
   const Operate = () => {
-    if (typeName == "VINE/ROSE LP") {
+    if (typeName == "bitGOV/ROSE LP") {
       if (!amount) {
         return;
       }
@@ -603,7 +604,7 @@ export default function Earn() {
       } else if (buttonName == "UnStake") {
         unStakeLp();
       }
-    } else if (typeName == "vUSD/USDC LP") {
+    } else if (typeName == "bitUSD/USDC LP") {
       if (!amount) {
         return;
       }
@@ -647,19 +648,19 @@ export default function Earn() {
             <div className={styles.earnMain}>
               <div className={styles.earnInfo}>
                 <p className={styles.earnTip}>
-                  Lock $VINE to boost your APR to {boost}x.
+                  Lock $bitGOV to boost your APR to {boost}x.
                 </p>
                 <div className={styles.CoinType}>
-                  <img src="/dapp/vUSD.svg" alt="vUSD" />
-                  vUSD Minting
+                  <img src="/dapp/vUSD.svg" alt="bitUSD" />
+                  bitUSD Minting
                 </div>
                 <div className={styles.data}>
                   <div className={styles.dataItem}>
                     <p>Earn</p>
-                    <span>vine</span>
+                    <span>bitGOV</span>
                   </div>
                   <div className={styles.dataItem}>
-                    <p>vUSD Circ.</p>
+                    <p>bitUSD Circ.</p>
                     <span>${formatNum(vUSDCirc)}</span>
                   </div>
                   <div className={styles.dataItem}>
@@ -671,7 +672,7 @@ export default function Earn() {
                     <span>{formatNum(vUSDBaseApr1 * boost)}%</span>
                   </div>
                   <div className={styles.dataItem}>
-                    <p>Your Minted vUSD</p>
+                    <p>Your Minted bitUSD</p>
                     <span>{formatNum(debt)}</span>
                   </div>
                   <div className={styles.dataItem}>
@@ -688,7 +689,7 @@ export default function Earn() {
               </div>
               <div className={styles.earnInfo}>
                 <p className={styles.earnTip}>
-                  Lock $VINE to boost your APR to {boost}x.
+                  Lock $bitGOV to boost your APR to {boost}x.
                 </p>
                 <div className={styles.CoinType}>
                   <img
@@ -696,12 +697,12 @@ export default function Earn() {
                     src="/dapp/vineArose.svg"
                     alt="vUSD"
                   />
-                  VINE/ROSE LP
+                  bitGOV/ROSE LP
                 </div>
                 <div className={styles.data}>
                   <div className={styles.dataItem}>
                     <p>Earn</p>
-                    <span>vine</span>
+                    <span>bitGOV</span>
                   </div>
                   <div className={styles.dataItem}>
                     <p>TVL</p>
@@ -726,14 +727,14 @@ export default function Earn() {
                 </div>
                 <div
                   className={styles.button}
-                  onClick={() => changeManage("VINE/ROSE LP")}
+                  onClick={() => changeManage("bitGOV/ROSE LP")}
                 >
                   <div className="button rightAngle height">Manage</div>
                 </div>
               </div>
               <div className={styles.earnInfo}>
                 <p className={styles.earnTip}>
-                  Lock $VINE to boost your APR to {boost}x.
+                  Lock $bitGOV to boost your APR to {boost}x.
                 </p>
                 <div className={styles.CoinType}>
                   <img
@@ -741,12 +742,12 @@ export default function Earn() {
                     src="/dapp/usdc.svg"
                     alt="icon"
                   />
-                  vUSD/USDC LP
+                  bitUSD/USDC LP
                 </div>
                 <div className={styles.data}>
                   <div className={styles.dataItem}>
                     <p>Earn</p>
-                    <span>vine</span>
+                    <span>bitGOV</span>
                   </div>
                   <div className={styles.dataItem}>
                     <p>TVL</p>
@@ -771,14 +772,14 @@ export default function Earn() {
                 </div>
                 <div
                   className={styles.button}
-                  onClick={() => changeManage("vUSD/USDC LP")}
+                  onClick={() => changeManage("bitUSD/USDC LP")}
                 >
                   <div className="button rightAngle height">Manage</div>
                 </div>
               </div>
               <div className={styles.earnInfo}>
                 <p className={styles.earnTip}>
-                  Lock $VINE to boost your APR to {boost}x.
+                  Lock $bitGOV to boost your APR to {boost}x.
                 </p>
                 <div className={styles.CoinType}>
                   <img src="/dapp/vUSD.svg" alt="vUSD" />
@@ -787,7 +788,7 @@ export default function Earn() {
                 <div className={styles.data}>
                   <div className={styles.dataItem}>
                     <p>Earn</p>
-                    <span>vine</span>
+                    <span>bitGOV</span>
                   </div>
                   <div className={styles.dataItem}>
                     <p>TVL</p>
@@ -843,9 +844,9 @@ export default function Earn() {
                   <span>APR</span>
                   <div>
                     <p>
-                      {typeName == "VINE/ROSE LP"
+                      {typeName == "bitGOV/ROSE LP"
                         ? formatNum(vUSDBaseApr2 * boost)
-                        : typeName == "vUSD/USDC LP"
+                        : typeName == "bitUSD/USDC LP"
                         ? formatNum(vUSDBaseApr4 * boost)
                         : formatNum(vUSDBaseApr3 * boost)}{" "}
                       ({boost}x)
@@ -862,11 +863,11 @@ export default function Earn() {
                   <div className={styles.manageDesc}>
                     <p>{"Manage " + typeName}</p>
                     <div>
-                      {typeName == "VINE/ROSE LP"
-                        ? "Stake VINE/ROSE LP to earn VINE rewards."
-                        : typeName == "vUSD/USDC LP"
-                        ? "Stake vUSD/USDC LP to earn VINE rewards."
-                        : "Stake vUSD to earn VINE rewards. During liquidations, your deposit will be used to purchase discounted collaterals."}
+                      {typeName == "bitGOV/ROSE LP"
+                        ? "Stake bitGOV/ROSE LP to earn bitGOV rewards."
+                        : typeName == "bitUSD/USDC LP"
+                        ? "Stake bitUSD/USDC LP to earn bitGOV rewards."
+                        : "Stake bitUSD to earn bitGOV rewards. During liquidations, your deposit will be used to purchase discounted collaterals."}
                       {typeName == "Stability Pool" ? (
                         <Link
                           target="_blank"
@@ -886,21 +887,21 @@ export default function Earn() {
                         : null
                     }
                   >
-                    {typeName == "Mint vUSD" ? (
+                    {typeName == "Mint bitUSD" ? (
                       <>
                         <span
                           className={
                             changeType == "Mint" ? `${styles.active}` : null
                           }
-                          onClick={() => changeTypeCoin("Mint", "vUSD")}
+                          onClick={() => changeTypeCoin("Mint", "bitUSD")}
                           style={{ display: "none" }}
                         >
                           Mint
                         </span>
                       </>
                     ) : null}
-                    {typeName == "VINE/ROSE LP" ||
-                    typeName == "vUSD/USDC LP" ? (
+                    {typeName == "bitGOV/ROSE LP" ||
+                    typeName == "bitUSD/USDC LP" ? (
                       <>
                         <span
                           className={
@@ -926,7 +927,7 @@ export default function Earn() {
                           className={
                             changeType == "Deposit" ? `${styles.active}` : null
                           }
-                          onClick={() => changeTypeCoin("Deposit", "vUSD")}
+                          onClick={() => changeTypeCoin("Deposit", "bitUSD")}
                         >
                           Deposit
                         </span>
@@ -934,7 +935,7 @@ export default function Earn() {
                           className={
                             changeType == "Withdraw" ? `${styles.active}` : null
                           }
-                          onClick={() => changeTypeCoin("Withdraw", "vUSD")}
+                          onClick={() => changeTypeCoin("Withdraw", "bitUSD")}
                         >
                           Withdraw
                         </span>
@@ -973,9 +974,9 @@ export default function Earn() {
                           />
                           <span className="font_12_gray">
                             ≈$
-                            {typeName == "VINE/ROSE LP"
+                            {typeName == "bitGOV/ROSE LP"
                               ? formatNum(Number(amount) * lpPrice)
-                              : typeName == "vUSD/USDC LP"
+                              : typeName == "bitUSD/USDC LP"
                               ? formatNum(
                                   Number(amount) * (tvl / USDCtotalSupply)
                                 )
