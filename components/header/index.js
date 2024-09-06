@@ -366,8 +366,7 @@ export default function Header(props) {
       <div className={styles.head}>
         <div className={styles.headMain} id="vine">
           <Link href="/" className={styles.logo}>
-            <img src="/logo.png" alt="logo"></img>
-            Bit Protocol
+            <img src="/bitusd-logo.svg" alt="logo" />
             {type == "dapp" ? (
               <span className="tvl">TVL:${formatNum(totalTvl)}</span>
             ) : null}
@@ -790,7 +789,7 @@ export default function Header(props) {
           <div className="info infoNoPadding">
             <div className="infoTitle">
               <div>
-                <img className="vUSD" src="/dapp/vUSD.svg" alt="vUSD" />
+                <img className="vUSD" src="/dapp/bitUSD.svg" alt="vUSD" />
                 <p>Claim $bitGOV</p>
               </div>
               <div className="close">

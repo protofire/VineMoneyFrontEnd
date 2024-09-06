@@ -478,7 +478,7 @@ export const UserContextProvider = ({ children }) => {
       );
       setBoost(new BigNumber(boost._hex).multipliedBy(2).div(10000).toFixed());
 
-      //vUSD Minting
+      //bitUSD Minting
       const vaultEarned = await vineVaultQuery.claimableRewardAfterBoost(
         account,
         account,
@@ -505,7 +505,7 @@ export const UserContextProvider = ({ children }) => {
       );
       setstabilityEarned(Number(stabilityEarned.adjustedAmount._hex) / 1e18);
 
-      // // //vUSD/USDC LP
+      // // //bitUSD/USDC LP
       // const vusdUsdcEarned = await vineVaultQuery.claimableRewardAfterBoost(
       //   account,
       //   account,

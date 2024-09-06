@@ -91,7 +91,7 @@ export default function Home() {
           <img
             className="h5Show"
             style={{ width: "100%" }}
-            src="/home/h5Banner.svg"
+            src="/home/bannerBg.svg"
             alt="banner"
           />
           <div className={styles.bannerMain}>
@@ -103,7 +103,7 @@ export default function Home() {
               </p>
 
               {parseInt(new Date().getTime() / 1000) < 1709730000 ? (
-                <div div className="button soon">
+                <div className="button soon">
                   <span className="show">Deposit Collateral</span>
                   <span className="hide">Launching Soon</span>
                 </div>
@@ -191,17 +191,17 @@ export default function Home() {
               </div>
             </div>
             <div className={styles.vUSD}>
-              <img
+              {/* <img
                 className={styles.img01}
                 src="/home/vusd_bg.svg"
                 alt="bitUSD"
-              />
+              /> */}
               <img
                 className={styles.img03}
-                src="/home/vusd_big.svg"
+                src="/dapp/bitUSD.svg"
                 alt="bitUSD"
               />
-              <img className={styles.img02} src="/home/vusd.svg" alt="bitUSD" />
+              {/* <img className={styles.img02} src="/home/vusd.svg" alt="bitUSD" /> */}
             </div>
           </div>
           <div className={styles.faq} id="faq">

@@ -502,7 +502,7 @@ export default function Lock() {
           <div className="info infoNoPadding">
             <div className="infoTitle">
               <div>
-                <img className="vUSD" src="/dapp/vUSD.svg" alt="vUSD" />
+                <img className="vUSD" src="/dapp/bitUSD.svg" alt="vUSD" />
                 <p>Claim $bitGOV</p>
               </div>
               <div className="close">
@@ -543,7 +543,7 @@ export default function Lock() {
                   }}
                 >
                   Early Unlock Penalty:{" "}
-                  <span style={{ color: "#509D7B" }}>
+                  <span style={{ color: "#00D7CA" }}>
                     {formatNum(penaltyAmountPaid)}$bitGOV
                   </span>
                 </p>
@@ -563,7 +563,7 @@ export default function Lock() {
                 <div className='info infoNoPadding'>
                     <div className='infoTitle'>
                         <div>
-                            <img className='vUSD' src='/dapp/vUSD.svg' alt='vUSD' />
+                            <img className='vUSD' src='/dapp/bitUSD.svg' alt='vUSD' />
                             <p>Early Unlock</p>
                         </div>
                         <div className="close">
@@ -572,8 +572,8 @@ export default function Lock() {
                     </div>
                     <div className="data">
                         <div className="dataItem">
-                            <p>Unlocking early will incur a penalty fee. Currently, you have locked <span style={{ "color": "#509D7B" }}>{formatNum(accountLock)}vine</span>.
-                                Unlocking early will grant you <span style={{ "color": "#509D7B" }}>{Math.floor(amountWithdrawn)}vine</span>.
+                            <p>Unlocking early will incur a penalty fee. Currently, you have locked <span style={{ "color": "#00D7CA" }}>{formatNum(accountLock)}vine</span>.
+                                Unlocking early will grant you <span style={{ "color": "#00D7CA" }}>{Math.floor(amountWithdrawn)}vine</span>.
                             </p>
                         </div>
                         <div className={styles.buttonTwo}>

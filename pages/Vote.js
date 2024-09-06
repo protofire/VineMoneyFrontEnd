@@ -157,6 +157,12 @@ export default function Vote() {
     }
   }, [totalWeight, accountWeight]);
 
+  console.log({
+    result: Number((totalWeightAtData.current0 / totalPoint) * 100).toFixed(2),
+    current0: totalWeightAtData.current0,
+    totalPoint,
+  });
+
   let timerLoading = useRef(null);
   useEffect(() => {
     queryData();
@@ -171,6 +177,7 @@ export default function Vote() {
       id,
       week
     );
+
     return Number(getTotalWeightAt._hex) == 0
       ? 1
       : Number(getTotalWeightAt._hex);
@@ -316,7 +323,7 @@ export default function Vote() {
       if (Number(amount4) > 0) {
         data.push([4, Number(amount4)]);
       }
-
+      console.log({ data });
       const tx = await incentiveVotingMain.registerAccountWeightAndVote(
         account,
         26,
@@ -442,7 +449,7 @@ export default function Vote() {
                     onClick={() => setOpenDebt(!openDebt)}
                   >
                     <div>
-                      <img src="/dapp/vUSD.svg" alt="icon" />
+                      <img src="/dapp/bitUSD.svg" alt="icon" />
                       bitUSD Debt
                     </div>
                     <div className={styles.center}>
@@ -531,7 +538,7 @@ export default function Vote() {
                     onClick={() => setOpenvUSD(!openvUSD)}
                   >
                     <div>
-                      <img src="/dapp/vUSD.svg" alt="icon" />
+                      <img src="/dapp/bitUSD.svg" alt="icon" />
                       bitUSD Minting
                     </div>
                     <div className={styles.center}>
@@ -620,7 +627,7 @@ export default function Vote() {
                     onClick={() => setOpenPool(!openPool)}
                   >
                     <div>
-                      <img src="/dapp/vUSD.svg" alt="icon" />
+                      <img src="/dapp/bitUSD.svg" alt="icon" />
                       Stability Pool
                     </div>
                     <div className={styles.center}>

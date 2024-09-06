@@ -27,7 +27,7 @@ export default function DepositsAndDebt(props) {
           <div>
             <p>{Number(debt.toFixed(4)).toLocaleString()}</p>
             <p>
-              <img src="/dapp/vUSD.svg" alt="vUSD" />
+              <img src="/dapp/bitUSD.svg" width="24" height="24" alt="vUSD" />
               bitUSD
             </p>
           </div>

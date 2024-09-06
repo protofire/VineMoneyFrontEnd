@@ -172,7 +172,7 @@ export default function Reward() {
                             <span>Your Deposits</span>
                             <div className={styles.imgtype}>
                                 <p>{Number(debt.toFixed(4)).toLocaleString()}</p>
-                                <img src='/dapp/vUSD.svg' alt='vUSD' />
+                                <img src='/dapp/bitUSD.svg' alt='vUSD' />
                                 <p>
                                     vUSD
                                 </p>
@@ -281,7 +281,11 @@ export default function Reward() {
               onClick={() => setOpenPool(!openPool)}
             >
               <div>
-                <img className={styles.logo} src="/dapp/vUSD.svg" alt="rose" />
+                <img
+                  className={styles.logo}
+                  src="/dapp/bitUSD.svg"
+                  alt="rose"
+                />
                 <p>Stability Pool</p>
               </div>
               <div onClick={cancelBubble.bind(this)}>
@@ -425,7 +429,7 @@ export default function Reward() {
           <div className="info infoNoPadding">
             <div className="infoTitle">
               <div>
-                <img className="vUSD" src="/dapp/vUSD.svg" alt="vUSD" />
+                <img className="vUSD" src="/dapp/bitUSD.svg" alt="vUSD" />
                 <p>Lock $bitGOV</p>
               </div>
               <div className="close">

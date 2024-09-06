@@ -539,7 +539,7 @@ export default function Vault() {
                       style={{
                         fontSize: "12px",
                         marginTop: "10px",
-                        color: "#509D7B",
+                        color: "#00D7CA",
                       }}
                     >
                       <span>Collateral Ratio after Deposit </span>
@@ -723,7 +723,7 @@ export default function Vault() {
             <div className={styles.closeCoin}>
               <p>{Number(Number(debt).toFixed(4)).toLocaleString()}</p>
               <div>
-                <img src="/dapp/vUSD.svg" alt="vUSD"></img>
+                <img src="/dapp/bitUSD.svg" alt="vUSD"></img>
                 $bitUSD
               </div>
             </div>

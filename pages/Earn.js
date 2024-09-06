@@ -106,7 +106,7 @@ export default function Earn() {
   const [VUSDLpBanace, setVUSDLpBanace] = useState(0);
   const [stabilityPoolBanace, setStabilityPoolBanace] = useState(0);
 
-  //vUSD Minting
+  //bitUSD Minting
   const [vUSDCirc, setvUSDCirc] = useState(0);
   const [baseAPR1, setBaseAPR1] = useState(0);
 
@@ -116,7 +116,7 @@ export default function Earn() {
   //Stability Pool
   const [baseAPR3, setBaseAPR3] = useState(0);
 
-  //vUSD/USDC LP
+  //bitUSD/USDC LP
   const [baseAPR4, setBaseAPR4] = useState(0);
   const [USDCtotalSupply, setUSDCtotalSupply] = useState(0);
 
@@ -134,7 +134,7 @@ export default function Earn() {
       // const balanceOf2 = await vineLpTokenPoolQuery.balanceOf(account);
       // setUnStakeLpBalance((new BigNumber(balanceOf2._hex).div(1e18)).toFixed());
 
-      // //vUSD/USDC LP
+      // //bitUSD/USDC LP
       // //stake
       // const balanceOf4 = await VUSDUSDCLPQuery.balanceOf(account);
       // setStakeLpBalance2((new BigNumber(balanceOf4._hex).div(1e6)).toFixed());
@@ -166,7 +166,7 @@ export default function Earn() {
     // const balanceOf = await debtTokenQuery.balanceOf(VUSDUSDCLP);
     // setVUSDLpBanace(new BigNumber(balanceOf._hex).div(1e18).toFixed());
 
-    //vUSD Minting
+    //bitUSD Minting
     const vUSDCirc = await debtTokenQuery.totalSupply();
     setvUSDCirc(Number(vUSDCirc._hex) / 1e18);
     const baseAPR1 = await troveManagerQuery.rewardRate();
@@ -651,7 +651,7 @@ export default function Earn() {
                   Lock $bitGOV to boost your APR to {boost}x.
                 </p>
                 <div className={styles.CoinType}>
-                  <img src="/dapp/vUSD.svg" alt="bitUSD" />
+                  <img src="/dapp/bitUSD.svg" alt="bitUSD" />
                   bitUSD Minting
                 </div>
                 <div className={styles.data}>
@@ -782,7 +782,7 @@ export default function Earn() {
                   Lock $bitGOV to boost your APR to {boost}x.
                 </p>
                 <div className={styles.CoinType}>
-                  <img src="/dapp/vUSD.svg" alt="vUSD" />
+                  <img src="/dapp/bitUSD.svg" alt="vUSD" />
                   Stability Pool
                 </div>
                 <div className={styles.data}>
@@ -836,7 +836,7 @@ export default function Earn() {
             </div>
             <div className={styles.earnMain}>
               <div className={styles.title}>
-                <img src="/dapp/vUSD.svg" alt="vUSD" />
+                <img src="/dapp/bitUSD.svg" alt="vUSD" />
                 {typeName}
               </div>
               <div className={styles.dataInfo}>
@@ -874,7 +874,7 @@ export default function Earn() {
                           href="https://vine-money.gitbook.io/vine-money/protocol/stability-pool-and-liquidations"
                           rel="nofollow noopener noreferrer"
                         >
-                          <span style={{ color: "#57CC99" }}> Read more.</span>
+                          <span style={{ color: "#00D7CA" }}> Read more.</span>
                         </Link>
                       ) : null}
                     </div>

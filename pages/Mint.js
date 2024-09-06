@@ -234,7 +234,7 @@ export default function Mint() {
           <DepositsAndDebt></DepositsAndDebt>
           <div className={styles.mintMain}>
             <div className={styles.CoinType}>
-              <img src="/dapp/vUSD.svg" alt="bitUSD" />
+              <img src="/dapp/bitUSD.svg" alt="bitUSD" />
               $bitUSD
             </div>
             <div className={styles.enterAmount}>
