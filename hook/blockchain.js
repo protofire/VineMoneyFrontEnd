@@ -1,4 +1,10 @@
-import { createContext, useState, useEffect, useMemo } from "react";
+import {
+  createContext,
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+} from "react";
 import { ethers } from "ethers";
 import {
   useSignTypedData,
@@ -111,8 +117,7 @@ export const BlockchainContextProvider = ({ children }) => {
   const account = useAccount();
   const publicClient = usePublicClient();
   const { data: walletClient } = useWalletClient();
-
-  const result = useBalance({ address: account?.address });
+  const result = useBalance({ address: account.address });
   const stabilityPoolBalance = useBalance({
     address: addresses.stabilityPool[account.chainId],
   });
@@ -176,6 +181,7 @@ export const BlockchainContextProvider = ({ children }) => {
   const signer = useEthersSigner();
 
   // USE EFFECTS
+
   useEffect(() => {
     if (account.address) {
       getData();
@@ -200,13 +206,12 @@ export const BlockchainContextProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    console.log("User Troves", userTroves);
     if (Object.keys(userTroves).length > 0) {
       setUserTotalDebt(
         Object.values(userTroves).reduce((acc, trove) => acc + trove.debt, 0)
       );
     }
-  }, [userTroves]);
+  }, [Object.keys(userTroves)]);
 
   // WRITE FUNCTIONS
   const registerAccountWeightAndVote = async (data) => {
@@ -588,9 +593,9 @@ export const BlockchainContextProvider = ({ children }) => {
   };
 
   // QUERY FUNCTIONS
-  const getData = async () => {
+  const getData = useCallback(async () => {
     if (
-      account &&
+      account.address &&
       signatureTrove?.user &&
       result?.data &&
       signatureToken?.user
@@ -614,7 +619,13 @@ export const BlockchainContextProvider = ({ children }) => {
       // await getAccountActiveLocks();
       await getTotalWeight();
     }
-  };
+  }, [
+    account.address,
+    signatureTrove?.user,
+    signatureToken?.user,
+    lock,
+    result?.data?.value,
+  ]);
 
   const bitUsdLpData = async () => {
     const balanceLp = await publicClient.readContract({
@@ -988,7 +999,7 @@ export const BlockchainContextProvider = ({ children }) => {
   const getTrove = async (troveManagerAddr) => {
     try {
       const userTrovesCache = { ...userTroves };
-      console.log("cache", userTrovesCache);
+      console.log("cache", { troveManagerAddr, userTrovesCache });
 
       if (account.chainId !== 23294 && account.chainId !== 23295) {
         const trove = await publicClient.readContract({

@@ -11,7 +11,14 @@ import { formatNumber } from "../../utils/helpers";
 
 export default function Header(props) {
   const { menu, type, dappMenu } = props;
+
   const router = useRouter();
+
+  const account = useAccount();
+  const { connectors, connect } = useConnect();
+  const { disconnect } = useDisconnect();
+  const { chains, switchChain, status, error } = useSwitchChain();
+  const [openHealth, setOpenHealth] = useState(false);
 
   const {
     signTrove,
@@ -23,11 +30,11 @@ export default function Header(props) {
     totalSystemDebt,
   } = useContext(BlockchainContext);
 
-  const account = useAccount();
-  const { connectors, connect } = useConnect();
-  const { disconnect } = useDisconnect();
-  const { chains, switchChain, status, error } = useSwitchChain();
-  const [openHealth, setOpenHealth] = useState(false);
+  const [open, setOpen] = useState(true);
+  const [openConnect, setOpenConnect] = useState(false);
+  const [showSignIn, setShowSignIn] = useState(false);
+  const [showSignInToken, setShowSignInToken] = useState(false);
+  const [openNetworks, setOpenNetworks] = useState(false);
 
   const goMenu = (id) => {
     if (menu == "Home") {
@@ -36,12 +43,6 @@ export default function Header(props) {
       router.push("/#" + id);
     }
   };
-
-  const [open, setOpen] = useState(true);
-  const [openConnect, setOpenConnect] = useState(false);
-  const [showSignIn, setShowSignIn] = useState(false);
-  const [showSignInToken, setShowSignInToken] = useState(false);
-  const [openNetworks, setOpenNetworks] = useState(false);
 
   useEffect(() => {
     if (account.status === "connected" && menu !== "Home") {
@@ -82,9 +83,6 @@ export default function Header(props) {
                 alt="logo"
                 className={styles.logoImg}
               />
-              {/* {type == "dapp" ? (
-                <span className="tvl">TVL:${systemTVL.toFixed(2)}</span>
-              ) : null} */}
             </Link>
             {type == "dapp" ? (
               <div className={styles.main}>
@@ -236,7 +234,7 @@ export default function Header(props) {
                     ) : (
                       <img src="/dapp/rose.svg" alt="chainLogo" />
                     )}
-                    {account.chain.name}
+                    {account?.chain?.name}
                   </div>
                 )}
 

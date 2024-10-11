@@ -24,7 +24,8 @@ export const config = createConfig({
   multiInjectedProviderDiscovery: false,
   // chains: [sapphire, zkBtc, sapphireTestnet],
   chains: [sapphire, sapphireTestnet],
-  connectors: [injectedWithSapphire(), coinbaseWallet()],
+  // connectors: [injectedWithSapphire(), coinbaseWallet()],
+  connectors: [injectedWithSapphire()],
   transports: {
     [sapphire.id]: sapphireHttpTransport(),
     [sapphireTestnet.id]: sapphireHttpTransport(),
