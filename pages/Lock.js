@@ -1,29 +1,37 @@
 import styles from "../styles/dapp.module.scss";
 import Header from "../components/header";
 import Footer from "../components/footer";
-import { UserContext } from "../hook/user";
+import { BlockchainContext } from "../hook/blockchain";
 import { useEffect, useState, useContext, useRef } from "react";
 import BigNumber from "bignumber.js";
 import Wait from "../components/tooltip/wait";
+import Loading from "../components/tooltip/loading";
 import tooltip from "../components/tooltip";
 import Slider, { marks } from "rc-slider";
+import { formatNumber } from "../utils/helpers";
+
 import "rc-slider/assets/index.css";
 
 export default function Lock() {
   const {
-    vineTokenQuery,
-    tokenLockerMain,
-    tokenLocker,
-    tokenLockerQuery,
-    boostCalculatorQuery,
-    account,
-    currentState,
+    bitGovBalance,
+    userAccountWeight,
+    accountUnlockAmount,
+    accountLockAmount,
+    getAccountActiveLocks,
+    lockTotalWeight,
+    getWithdrawWithPenaltyAmounts,
+    boost,
+    lockToken,
     setCurrentState,
     setCurrentWaitInfo,
-    boost,
-    formatNum,
-    vinePrice,
-  } = useContext(UserContext);
+    currentState,
+    freeze,
+    unfreeze,
+    withdrawWithPenalty,
+  } = useContext(BlockchainContext);
+
+  const vinePrice = 1;
 
   const onKeyDown = async (e) => {
     const invalidChars = ["-", "+", "e", "E"];
@@ -53,30 +61,21 @@ export default function Lock() {
   const [isLocks, setIsLocks] = useState(false);
   const [amountWithdrawn, setAmountWithdrawn] = useState(0);
   const [penaltyAmountPaid, setPenaltyAmountPaid] = useState(0);
+  const [amount, setAmount] = useState("");
+  const [lockDate, setLockDate] = useState();
+  const [accountShare, setAccountShare] = useState(0);
+  const [showUnlock, setShowUnlock] = useState(false);
+  const [claimAmount, setClaimAmount] = useState("");
+  const [loading, setLoading] = useState(true);
+
   const queryData = async () => {
-    if (account) {
-      const balanceOf = await vineTokenQuery.balanceOf(account);
-      setBalance(new BigNumber(balanceOf._hex).div(1e18).toFixed());
-      const accountWeight = await tokenLockerQuery.getAccountWeight(account);
-      setAccountWeight(new BigNumber(accountWeight._hex).toFixed());
-
-      const accountBalances = await tokenLockerQuery.getAccountBalances(
-        account
-      );
-      setAccountLock(
-        Number(new BigNumber(accountBalances.locked._hex).toFixed())
-      );
-      setAccountUnLock(
-        Number(new BigNumber(accountBalances.unlocked._hex).toFixed())
-      );
-
-      const locks = await tokenLockerQuery.getAccountActiveLocks(account, 26);
-      setIsLocks(Number(locks.frozenAmount._hex) > 0 ? true : false);
-    }
-    if (tokenLockerQuery) {
-      const totalWeight = await tokenLockerQuery.getTotalWeight();
-      setTotalWeight(new BigNumber(totalWeight._hex).toFixed());
-    }
+    setBalance(bitGovBalance);
+    setAccountWeight(userAccountWeight);
+    setAccountLock(accountLockAmount);
+    setAccountUnLock(accountUnlockAmount);
+    const locks = await getAccountActiveLocks();
+    setIsLocks(locks.frozenAmount > 0);
+    setTotalWeight(lockTotalWeight);
     // if (vineTokenQuery) {
     //     const balanceOf = await vineTokenQuery.balanceOf(tokenLocker);
     //     setTotalLock((new BigNumber(balanceOf._hex).div(1e18)).toFixed());
@@ -90,9 +89,14 @@ export default function Lock() {
       queryData();
     }, 3000);
     return () => clearInterval(timerLoading.current);
-  }, [account]);
+  }, [
+    bitGovBalance,
+    userAccountWeight,
+    accountUnlockAmount,
+    accountLockAmount,
+    lockTotalWeight,
+  ]);
 
-  const [amount, setAmount] = useState("");
   const changeAmount = async (e) => {
     const value = Number(e.target.value);
     if (value < Number(balance)) {
@@ -106,7 +110,6 @@ export default function Lock() {
     setAmount(Math.floor(Number(balance) * value));
   };
 
-  const [lockDate, setLockDate] = useState();
   useEffect(() => {
     if (Number(amount) && currentValue) {
       const currentDate = new Date();
@@ -120,27 +123,20 @@ export default function Lock() {
     }
   }, [amount, currentValue]);
 
-  const [accountShare, setAccountShare] = useState(0);
   useEffect(() => {
     if (accountWeight && totalWeight) {
       setAccountShare((Number(accountWeight) / Number(totalWeight)) * 100);
+      setLoading(false);
     }
   }, [totalWeight, accountWeight]);
 
-  const [showUnlock, setShowUnlock] = useState(false);
-
-  const [claimAmount, setClaimAmount] = useState("");
   const changeClaimAmount = async (e) => {
     const value = Number(e.target.value);
-    const withdrawWithPenaltyAmounts =
-      await tokenLockerQuery.getWithdrawWithPenaltyAmounts(account, value);
-    setAmountWithdrawn(
-      Number(withdrawWithPenaltyAmounts.amountWithdrawn._hex) / 1e18
+    const withdrawWithPenaltyAmounts = await getWithdrawWithPenaltyAmounts(
+      value
     );
-    setPenaltyAmountPaid(
-      Number(withdrawWithPenaltyAmounts.penaltyAmountPaid._hex) / 1e18
-    );
-    // console.log(Number(withdrawWithPenaltyAmounts.amountWithdrawn._hex) / 1e18, Number(withdrawWithPenaltyAmounts.penaltyAmountPaid._hex) / 1e18);
+    setAmountWithdrawn(withdrawWithPenaltyAmounts.amountWithdrawn);
+    setPenaltyAmountPaid(withdrawWithPenaltyAmounts.penaltyAmountPaid);
     if (value < Number(accountLock)) {
       setClaimAmount(value == 0 ? "" : value);
     } else {
@@ -153,18 +149,18 @@ export default function Lock() {
     setShowUnlock(true);
   };
 
-  const Lock = async () => {
+  const lock = async () => {
     if (!amount) {
       return;
     }
     try {
-      const lockTx = await tokenLockerMain.lock(account, amount, currentValue);
+      const tx = await lockToken(amount, currentValue);
       setCurrentWaitInfo({
         type: "loading",
-        info: "Lock " + Number(amount.toFixed(4)).toLocaleString() + " $VINE",
+        info: "Lock " + Number(amount.toFixed(4)).toLocaleString() + " $bitGOV",
       });
       setCurrentState(true);
-      const result = await lockTx.wait();
+      const result = await tx.wait();
       setCurrentState(false);
       if (result.status === 0) {
         tooltip.error({
@@ -193,10 +189,10 @@ export default function Lock() {
       return;
     }
     try {
-      const lockTx = await tokenLockerMain.freeze();
+      const tx = await freeze();
       setCurrentWaitInfo({ type: "loading" });
       setCurrentState(true);
-      const result = await lockTx.wait();
+      const result = await tx.wait();
       setCurrentState(false);
       if (result.status === 0) {
         tooltip.error({
@@ -220,10 +216,10 @@ export default function Lock() {
 
   const disableAutoLock = async () => {
     try {
-      const lockTx = await tokenLockerMain.unfreeze(true);
+      const tx = await unfreeze();
       setCurrentWaitInfo({ type: "loading" });
       setCurrentState(true);
-      const result = await lockTx.wait();
+      const result = await tx.wait();
       setCurrentState(false);
       if (result.status === 0) {
         tooltip.error({
@@ -245,21 +241,19 @@ export default function Lock() {
     }
   };
 
-  const EarlyUnlock = async () => {
+  const earlyUnlock = async () => {
     if (!claimAmount) {
       tooltip.error({ content: "Enter Amount", duration: 5000 });
       return;
     }
     try {
-      const lockTx = await tokenLockerMain.withdrawWithPenalty(
-        Math.floor(claimAmount)
-      );
+      const tx = await withdrawWithPenalty(Math.floor(claimAmount));
       setCurrentWaitInfo({
         type: "loading",
-        info: "Early Unlock " + Math.floor(claimAmount) + " $VINE",
+        info: "Early Unlock " + Math.floor(claimAmount) + " $bitGOV",
       });
       setCurrentState(true);
-      const result = await lockTx.wait();
+      const result = await tx.wait();
       setCurrentState(false);
       if (result.status === 0) {
         tooltip.error({
@@ -301,13 +295,13 @@ export default function Lock() {
                 <div style={{ display: "flex" }}>
                   <img
                     style={{ width: "26px" }}
-                    src="/dapp/vine.svg"
-                    alt="vUSD"
+                    src="/dapp/bitUSD.svg"
+                    alt="bitUSD"
                   />
-                  <p>{formatNum(accountLock + accountUnLock)}</p>
+                  <p>{formatNumber(accountLock + accountUnLock)}</p>
                 </div>
                 <span className={styles.span}>
-                  ≈ ${formatNum((accountLock + accountUnLock) * vinePrice)}
+                  ≈ ${formatNumber((accountLock + accountUnLock) * vinePrice)}
                 </span>
                 {accountLock + accountUnLock > 0 ? (
                   <div
@@ -328,9 +322,11 @@ export default function Lock() {
               <div className={styles.value}>
                 <span>Your Lock Weight</span>
                 <div>
-                  <p>{formatNum(accountWeight)}</p>
+                  <p>{formatNumber(accountWeight)}</p>
                 </div>
-                <span className={styles.span}>of {formatNum(totalWeight)}</span>
+                <span className={styles.span}>
+                  of {formatNumber(totalWeight)}
+                </span>
               </div>
               <div className={styles.value}>
                 <span>Your Share</span>
@@ -355,7 +351,7 @@ export default function Lock() {
                   <span>Enter amount</span>
                   <span style={{ fontSize: "12px" }}>
                     Balance{" "}
-                    {Number(Number(balance).toFixed(2)).toLocaleString()}$VINE
+                    {Number(Number(balance).toFixed(2)).toLocaleString()}$bitGOV
                   </span>
                 </div>
                 <div className="inputTxt3">
@@ -407,7 +403,7 @@ export default function Lock() {
                       ? "button rightAngle height disable"
                       : "button rightAngle height"
                   }
-                  onClick={() => Lock()}
+                  onClick={() => lock()}
                 >
                   LOCK
                 </div>
@@ -416,12 +412,12 @@ export default function Lock() {
                 <div className={styles.dataItem}>
                   <p>Lock weight</p>
                   <div>
-                    {formatNum(accountWeight)}
+                    {formatNumber(accountWeight)}
                     {Number(amount) ? (
                       <>
                         <img src="/dapp/right.svg" alt="icon" />
                         <span>
-                          {formatNum(
+                          {formatNumber(
                             Number(accountWeight) +
                               Number(amount) * currentValue
                           )}
@@ -433,12 +429,12 @@ export default function Lock() {
                 <div className={styles.dataItem}>
                   <p>Total locked $bitGOV</p>
                   <div>
-                    {formatNum(accountLock + accountUnLock)}
+                    {formatNumber(accountLock + accountUnLock)}
                     {Number(amount) ? (
                       <>
                         <img src="/dapp/right.svg" alt="icon" />
                         <span>
-                          {formatNum(
+                          {formatNumber(
                             Number(accountLock + accountUnLock) + Number(amount)
                           )}
                         </span>
@@ -516,11 +512,11 @@ export default function Lock() {
             <div className="data">
               <div className="dataItem">
                 <p>Locked </p>
-                <span>{formatNum(accountLock)} $bitGOV</span>
+                <span>{formatNumber(accountLock)} $bitGOV</span>
               </div>
               <div className="dataItem">
                 <p>Unlocked </p>
-                <span>{formatNum(accountUnLock)} $bitGOV</span>
+                <span>{formatNumber(accountUnLock)} $bitGOV</span>
               </div>
               <div className="inputTxt2">
                 <input
@@ -544,14 +540,14 @@ export default function Lock() {
                 >
                   Early Unlock Penalty:{" "}
                   <span style={{ color: "#00D7CA" }}>
-                    {formatNum(penaltyAmountPaid)}$bitGOV
+                    {formatNumber(penaltyAmountPaid)}$bitGOV
                   </span>
                 </p>
               ) : null}
               <div
                 className="button rightAngle"
                 style={{ marginTop: "20px" }}
-                onClick={() => EarlyUnlock()}
+                onClick={() => earlyUnlock()}
               >
                 Claim
               </div>
@@ -572,7 +568,7 @@ export default function Lock() {
                     </div>
                     <div className="data">
                         <div className="dataItem">
-                            <p>Unlocking early will incur a penalty fee. Currently, you have locked <span style={{ "color": "#00D7CA" }}>{formatNum(accountLock)}vine</span>.
+                            <p>Unlocking early will incur a penalty fee. Currently, you have locked <span style={{ "color": "#00D7CA" }}>{formatNumber(accountLock)}vine</span>.
                                 Unlocking early will grant you <span style={{ "color": "#00D7CA" }}>{Math.floor(amountWithdrawn)}vine</span>.
                             </p>
                         </div>
@@ -584,6 +580,7 @@ export default function Lock() {
                 </div>
             </div> : null} */}
 
+      {loading ? <Loading></Loading> : null}
       {currentState ? <Wait></Wait> : null}
       <Footer></Footer>
     </>

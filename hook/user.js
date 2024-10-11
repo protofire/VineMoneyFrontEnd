@@ -12,13 +12,13 @@ import PriceFeedHook from "../abi/PriceFeed";
 import TroveManagerGettersHook from "../abi/TroveManagerGetters";
 import tokenLockerHook from "../abi/tokenLocker";
 import BoostCalculatorHook from "../abi/BoostCalculator";
-import VineLpTokenPoolHook from "../abi/VineLpTokenPool";
+import VineLpTokenPoolHook from "../abi/BitLpTokenPool";
 import LPPriceOracleHook from "../abi/LPPriceOracle";
 import StabilityPoolHook from "../abi/StabilityPool";
 import MultiCollateralHintHelpersHook from "../abi/MultiCollateralHintHelpers";
 import IncentiveVotingHook from "../abi/IncentiveVoting";
 import idovestingHook from "../abi/idovesting";
-import vineVaultHook from "../abi/vineVault";
+import vineVaultHook from "../abi/Vault";
 
 export const UserContext = createContext({
   account: "",

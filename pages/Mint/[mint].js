@@ -1,29 +1,154 @@
-import styles from "../styles/dapp.module.scss";
-import Header from "../components/header";
-import Footer from "../components/footer";
-import { UserContext } from "../hook/user";
-import { useEffect, useState, useContext, useRef } from "react";
+import styles from "../../styles/dapp.module.scss";
+import Header from "../../components/header";
+import Footer from "../../components/footer";
+import { useEffect, useState, useContext } from "react";
 import BigNumber from "bignumber.js";
-import Wait from "../components/tooltip/wait";
-import tooltip from "../components/tooltip";
-import DepositsAndDebt from "../components/dapp/depositsAndDebt";
+import Wait from "../../components/tooltip/wait";
+import tooltip from "../../components/tooltip";
+import DepositsAndDebt from "../../components/dapp/depositsAndDebt";
+import { useRouter } from "next/router";
+import { BlockchainContext } from "../../hook/blockchain";
+import PageBack from "../../components/pageBack";
+import { useWaitForTransactionReceipt } from "wagmi";
 
 export default function Mint() {
+  const router = useRouter();
   const {
-    account,
-    troveManager,
+    userTroves,
+    collaterals,
     balance,
-    currentState,
+    collateralPrices,
     setCurrentState,
     setCurrentWaitInfo,
-    borrowerOperationsMint,
-    status,
-    debt,
-    deposits,
-    pre,
-    next,
-    rosePrice,
-  } = useContext(UserContext);
+    currentState,
+    adjustTrove,
+    getTokenBalance,
+    approve,
+  } = useContext(BlockchainContext);
+
+  const [ratioType, setRatioType] = useState("Custom");
+  const [collAmount, setCollAmount] = useState("");
+  const [collateralRatio, setCollateralRatio] = useState(0);
+  const [debtMax, setDebtMax] = useState(0);
+  const [debtAmount, setDebtAmount] = useState("");
+  const [ratio, setRatio] = useState(0);
+  const [ratioNew, setRatioNew] = useState(0);
+  const [isPayable, setIsPayable] = useState(false);
+  const [collateralBalance, setCollateralBalance] = useState(0);
+  const [deposits, setDeposits] = useState(0);
+  const [debt, setDebt] = useState(0);
+  const [status, setStatus] = useState(0);
+  const [collateralAddr, setCollateralAddr] = useState("");
+  const [txHash, setTxHash] = useState("");
+  const [approved, setApproved] = useState({
+    hash: "",
+    status: false,
+  });
+  const [collateral, setCollateral] = useState({
+    mcr: 0,
+    borrowingRate: 0.0,
+    redemptionRate: 0.0,
+    mintedBitUSD: 0.0,
+    tvl: 0.0,
+    collateral: {
+      logo: "rose.svg",
+      name: "",
+      address: "",
+      payable: false,
+    },
+  });
+
+  const price = collateralPrices[router.query.mint];
+
+  const { data: txReceipt, error: txError } = useWaitForTransactionReceipt({
+    hash: txHash,
+    confirmations: 1,
+  });
+
+  useEffect(() => {
+    async function getData() {
+      setCollateral(collaterals[router.query.mint]);
+      setDeposits(userTroves[router.query.mint]?.deposits || 0);
+      setDebt(userTroves[router.query.mint]?.debt || 0);
+      setStatus(userTroves[router.query.mint]?.status || 0);
+      setCollateralAddr(collaterals[router.query.mint]?.collateral.address);
+      setIsPayable(collaterals[router.query.mint]?.collateral.payable);
+      const tokenBalance = !collaterals[router.query.mint]?.collateral.payable
+        ? await getTokenBalance(
+            collaterals[router.query.mint]?.collateral.address
+          )
+        : 0;
+      setCollateralBalance(tokenBalance);
+    }
+    getData();
+  }, [collaterals, userTroves]);
+
+  useEffect(() => {
+    if (txReceipt && txHash) {
+      setCurrentState(false);
+      tooltip.success({ content: "Successful", duration: 5000 });
+      if (approved.hash) {
+        setApproved({
+          hash: approved.hash,
+          status: true,
+        });
+      }
+    }
+    if (txError && txHash) {
+      setCurrentState(false);
+      tooltip.error({
+        content:
+          "Transaction failed due to a network error. Please refresh the page and try again.",
+        duration: 5000,
+      });
+      setApproved({
+        hash: "",
+        status: false,
+      });
+    }
+    setTxHash("");
+  }, [txReceipt, txError]);
+
+  useEffect(() => {
+    async function depositApproved() {
+      if (approved.hash && approved.status) {
+        await mint();
+        setApproved({
+          hash: "",
+          status: false,
+        });
+      }
+    }
+    depositApproved();
+  }, [approved]);
+
+  useEffect(() => {
+    const value = ((deposits * price) / debt) * 100;
+    setRatio(value);
+    if (collateralRatio && ratioType == "Auto") {
+      setRatioNew(collateralRatio);
+    } else {
+      const valueNew =
+        (((deposits + Number(collAmount)) * price) /
+          (debt + Number(debtAmount))) *
+        100;
+      setRatioNew(valueNew);
+    }
+  }, [collAmount, price, collateralRatio, debtAmount, ratioType]);
+
+  useEffect(() => {
+    if (collAmount) {
+      if (collateralRatio && ratioType == "Auto") {
+        const max =
+          (Number(deposits + collAmount) * price) / (collateralRatio / 100) -
+          debt;
+        setDebtAmount(max);
+      } else {
+        const max = (Number(deposits + collAmount) * price) / 1.55 - debt;
+        setDebtAmount(max);
+      }
+    }
+  }, [collAmount, ratioType, collateralRatio]);
 
   const onKeyDown = async (e) => {
     const invalidChars = ["-", "+", "e", "E"];
@@ -32,12 +157,11 @@ export default function Mint() {
     }
   };
 
-  const [ratioType, setRatioType] = useState("Custom");
-
-  const [collAmount, setCollAmount] = useState("");
   const changeCollAmount = async (e) => {
     const value = Number(e.target.value);
-    const maxBalance = balance - 1 > 0 ? balance - 1 : 0;
+    console.log(collateralBalance);
+    const userBalance = isPayable ? balance : collateralBalance;
+    const maxBalance = userBalance - 1 > 0 ? userBalance - 1 : 0;
     if (value < maxBalance) {
       setCollAmount(value == 0 ? "" : value);
     } else {
@@ -49,26 +173,23 @@ export default function Mint() {
     setCollAmount((balance - 1 > 0 ? balance - 1 : 0) * value);
   };
 
-  const [collateralRatio, setCollateralRatio] = useState(0);
   const changeCollateralRatio = async (e) => {
     const value = Number(e.target.value);
     setCollateralRatio(value == 0 ? "" : value);
   };
 
-  const [debtMax, setDebtMax] = useState(0);
   useEffect(() => {
     if (collateralRatio && ratioType == "Auto") {
       const max =
-        (Number(deposits + collAmount) * rosePrice) / (collateralRatio / 100) -
+        (Number(deposits + collAmount) * price) / (collateralRatio / 100) -
         debt;
       setDebtMax(max);
     } else {
-      const max = (Number(deposits + collAmount) * rosePrice) / 1.55 - debt;
+      const max = (Number(deposits + collAmount) * price) / 1.55 - debt;
       setDebtMax(max);
     }
-  }, [collAmount, rosePrice, collateralRatio, ratioType]);
+  }, [collAmount, price, collateralRatio, ratioType]);
 
-  const [debtAmount, setDebtAmount] = useState("");
   const changeDebtAmount = async (e) => {
     const value = Number(e.target.value);
     if (value > debtMax) {
@@ -82,22 +203,6 @@ export default function Mint() {
     setDebtAmount(debtMax * value);
   };
 
-  const [ratio, setRatio] = useState(0);
-  const [ratioNew, setRatioNew] = useState(0);
-  useEffect(() => {
-    const value = ((deposits * rosePrice) / debt) * 100;
-    setRatio(value);
-    if (collateralRatio && ratioType == "Auto") {
-      setRatioNew(collateralRatio);
-    } else {
-      const valueNew =
-        (((deposits + Number(collAmount)) * rosePrice) /
-          (debt + Number(debtAmount))) *
-        100;
-      setRatioNew(valueNew);
-    }
-  }, [collAmount, rosePrice, collateralRatio, debtAmount, ratioType]);
-
   const changeRatioType = (index) => {
     setRatioType(index);
     if (index == "Auto") {
@@ -105,22 +210,7 @@ export default function Mint() {
     }
   };
 
-  useEffect(() => {
-    if (collAmount) {
-      if (collateralRatio && ratioType == "Auto") {
-        const max =
-          (Number(deposits + collAmount) * rosePrice) /
-            (collateralRatio / 100) -
-          debt;
-        setDebtAmount(max);
-      } else {
-        const max = (Number(deposits + collAmount) * rosePrice) / 1.55 - debt;
-        setDebtAmount(max);
-      }
-    }
-  }, [collAmount, ratioType, collateralRatio]);
-
-  const Mint = async () => {
+  const approveCollateral = async () => {
     if (!collAmount || !debtAmount) {
       return;
     }
@@ -131,90 +221,79 @@ export default function Mint() {
       });
       return;
     }
-    if (status == 0 || status == 2 || status == 3) {
-      try {
-        const mintTx = await borrowerOperationsMint.openTrove(
-          troveManager,
-          account,
-          new BigNumber(1e16).toFixed(),
-          new BigNumber(collAmount).multipliedBy(1e18).toFixed(),
-          new BigNumber(debtAmount).multipliedBy(1e18).toFixed(),
-          pre,
-          next,
-          { value: new BigNumber(collAmount).multipliedBy(1e18).toFixed() }
-        );
-        setCurrentWaitInfo({
-          type: "loading",
-          info:
-            "Mint " +
-            Number(debtAmount.toFixed(4)).toLocaleString() +
-            " $bitUSD",
-        });
-        setCurrentState(true);
-        const mintResult = await mintTx.wait();
-        setCurrentState(false);
-        if (mintResult.status === 0) {
-          tooltip.error({
-            content:
-              "Transaction failed due to a network error. Please refresh the page and try again.",
-            duration: 5000,
-          });
-        } else {
-          tooltip.success({ content: "Successful", duration: 5000 });
-        }
-        setCollAmount("");
-        setDebtAmount("");
-      } catch (error) {
-        setCurrentState(false);
+    try {
+      const tx = await approve(
+        collateralAddr,
+        new BigNumber(collAmount).multipliedBy(1e18).toFixed()
+      );
+      setCurrentWaitInfo({
+        type: "loading",
+        info: `Approving ${Number(collAmount.toFixed(4)).toLocaleString()} $${
+          collateral?.collateral?.name
+        }`,
+      });
+      setApproved({
+        hash: tx,
+        status: false,
+      });
+      setCurrentState(true);
+      setTxHash(tx);
+    } catch (error) {
+      console.log;
+      setCurrentState(false);
+      tooltip.error({
+        content:
+          "Transaction failed due to a network error. Please refresh the page and try again.",
+        duration: 5000,
+      });
+    }
+  };
+
+  const mint = async () => {
+    if (!collAmount || !debtAmount) {
+      return;
+    }
+    if (Number(debtAmount) < 1) {
+      tooltip.error({
+        content: "A Minimum Debt of 1 bitUSD is Required!",
+        duration: 5000,
+      });
+      return;
+    }
+    try {
+      const tx = await adjustTrove(
+        router.query.mint,
+        new BigNumber(collAmount).multipliedBy(1e18).toFixed(),
+        new BigNumber(debtAmount).multipliedBy(1e18).toFixed(),
+        isPayable
+      );
+      setCurrentWaitInfo({
+        type: "loading",
+        info:
+          "Mint " + Number(debtAmount.toFixed(4)).toLocaleString() + " $bitUSD",
+      });
+      setCurrentState(true);
+      const mintResult = await tx.wait();
+      setCurrentState(false);
+      if (mintResult.status === 0) {
         tooltip.error({
           content:
             "Transaction failed due to a network error. Please refresh the page and try again.",
           duration: 5000,
         });
+      } else {
+        tooltip.success({ content: "Successful", duration: 5000 });
       }
-    } else {
-      try {
-        const mintTx = await borrowerOperationsMint.adjustTrove(
-          troveManager,
-          account,
-          new BigNumber(1e16).toFixed(),
-          new BigNumber(collAmount).multipliedBy(1e18).toFixed(),
-          0,
-          new BigNumber(debtAmount).multipliedBy(1e18).toFixed(),
-          true,
-          pre,
-          next,
-          { value: new BigNumber(collAmount).multipliedBy(1e18).toFixed() }
-        );
-        setCurrentWaitInfo({
-          type: "loading",
-          info:
-            "Mint " +
-            Number(debtAmount.toFixed(4)).toLocaleString() +
-            " $bitUSD",
-        });
-        setCurrentState(true);
-        const mintResult = await mintTx.wait();
-        setCurrentState(false);
-        if (mintResult.status === 0) {
-          tooltip.error({
-            content:
-              "Transaction failed due to a network error. Please refresh the page and try again.",
-            duration: 5000,
-          });
-        } else {
-          tooltip.success({ content: "Successful", duration: 5000 });
-        }
-        setCollAmount("");
-        setDebtAmount("");
-      } catch (error) {
-        setCurrentState(false);
-        tooltip.error({
-          content:
-            "Transaction failed due to a network error. Please refresh the page and try again.",
-          duration: 5000,
-        });
-      }
+      setCollAmount("");
+      setDebtAmount("");
+    } catch (error) {
+      console.log(error);
+      setCurrentState(false);
+      tooltip.error({
+        content:
+          "Transaction failed due to a network error. Please refresh the page and try again.",
+        duration: 5000,
+      });
     }
   };
 
@@ -222,29 +301,39 @@ export default function Mint() {
     <>
       <Header type="dapp" dappMenu="Mint"></Header>
       <div className="dappBg">
+        <PageBack></PageBack>
         <div className={`${styles.Mint} ${"dappMain"}`}>
           <div className={styles.topType}>
             <h3>Mint bitUSD</h3>
             <p>
-              Deposit your $ROSE as collateral in Vault to mint bitUSD. Stake
-              bitUSD or provide liquidity to earn rewards using the Bit
-              Protocol.
+              Deposit your ${collateral?.collateral?.name} as collateral in
+              Vault to mint bitUSD. Stake bitUSD or provide liquidity to earn
+              rewards using the Bit Protocol.
             </p>
           </div>
-          <DepositsAndDebt></DepositsAndDebt>
+
+          <DepositsAndDebt address={router.query.mint}></DepositsAndDebt>
+
           <div className={styles.mintMain}>
             <div className={styles.CoinType}>
-              <img src="/dapp/bitUSD.svg" alt="bitUSD" />
-              $bitUSD
+              <div className={styles.collateral}>
+                <img src="/dapp/bitUSD.svg" alt="bitUSD" />
+                $bitUSD
+              </div>
             </div>
+
             <div className={styles.enterAmount}>
               <div className={styles.miniTitle}>
                 <span>Enter amount</span>
                 <span style={{ fontSize: "12px" }}>
-                  Balance {Number(Number(balance).toFixed(4)).toLocaleString()}{" "}
-                  $ROSE
+                  Balance{" "}
+                  {Number(
+                    Number(isPayable ? balance : collateralBalance).toFixed(4)
+                  ).toLocaleString()}{" "}
+                  ${collateral?.collateral?.name}
                 </span>
               </div>
+
               <div className="inputTxt3">
                 <input
                   type="number"
@@ -255,7 +344,7 @@ export default function Mint() {
                   onChange={changeCollAmount.bind(this)}
                   value={collAmount}
                 ></input>
-                <span>$ROSE</span>
+                <span>${collateral?.collateral?.name}</span>
               </div>
               <div className="changeBalance">
                 <span onClick={() => changeCollVaule(0.25)}>25%</span>
@@ -342,6 +431,7 @@ export default function Mint() {
                 </span>
               </div>
             </div>
+
             <div className={styles.debt}>
               <div className={styles.dataList}>
                 <div className={styles.dataItem}>
@@ -349,7 +439,7 @@ export default function Mint() {
                   <span>
                     $
                     {Number(
-                      (Number(collAmount) * rosePrice).toFixed(2)
+                      (Number(collAmount) * price).toFixed(2)
                     ).toLocaleString()}
                   </span>
                 </div>
@@ -399,7 +489,7 @@ export default function Mint() {
                 <div className={styles.dataItem}>
                   <p>Liquidation Price</p>
                   <span>
-                    ROSE = $
+                    {collateral?.collateral?.name} = $
                     {Number((debt * 1.5) / deposits)
                       .toFixed(4)
                       .toLocaleString()}
@@ -423,7 +513,13 @@ export default function Mint() {
                     ? "button rightAngle height disable"
                     : "button rightAngle height"
                 }
-                onClick={() => Mint()}
+                onClick={() => {
+                  if (isPayable) {
+                    mint();
+                  } else {
+                    approveCollateral();
+                  }
+                }}
               >
                 Mint
               </div>
@@ -431,9 +527,7 @@ export default function Mint() {
           </div>
         </div>
       </div>
-
       {currentState ? <Wait></Wait> : null}
-
       <Footer></Footer>
     </>
   );

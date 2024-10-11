@@ -1,10 +1,32 @@
 import styles from "../../styles/dapp.module.scss";
-import { UserContext } from "../../hook/user";
-import { useContext } from "react";
+import { BlockchainContext } from "../../hook/blockchain";
+import { useContext, useEffect, useState } from "react";
 
-export default function DepositsAndDebt(props) {
-  const { debt, deposits } = useContext(UserContext);
-  const { type } = props;
+export default function DepositsAndDebt({ type, address }) {
+  const { userTroves, collaterals } = useContext(BlockchainContext);
+
+  const [deposits, setDeposits] = useState(0);
+  const [debt, setDebt] = useState(0);
+  const [collateral, setCollateral] = useState({
+    mcr: 0,
+    borrowingRate: 0.0,
+    redemptionRate: 0.0,
+    mintedBitUSD: 0.0,
+    tvl: 0.0,
+    collateral: {
+      logo: "rose.svg",
+      name: "",
+    },
+  });
+
+  useEffect(() => {
+    if (userTroves[address] && collaterals[address]) {
+      setDeposits(userTroves[address].deposits);
+      setDebt(userTroves[address].debt);
+      setCollateral(collaterals[address]);
+    }
+  }, [address, userTroves, collaterals]);
+
   return (
     <>
       <div
@@ -16,8 +38,12 @@ export default function DepositsAndDebt(props) {
           <div>
             <p>{Number(deposits.toFixed(4)).toLocaleString()}</p>
             <p>
-              <img src="/dapp/rose.svg" alt="rose" />
-              ROSE
+              <img
+                style={{ width: "24px", height: "24px" }}
+                src={`/dapp/${collateral.collateral.logo}`}
+                alt="rose"
+              />
+              {collateral.collateral.name}
             </p>
           </div>
         </div>
