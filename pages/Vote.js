@@ -1,7 +1,7 @@
 import styles from "../styles/dapp.module.scss";
 import Header from "../components/header";
 import Footer from "../components/footer";
-import { useEffect, useState, useContext, useRef } from "react";
+import { useEffect, useState, useContext, useRef, useCallback } from "react";
 import BigNumber from "bignumber.js";
 import Wait from "../components/tooltip/wait";
 import tooltip from "../components/tooltip";
@@ -102,8 +102,9 @@ export default function Vote() {
     setAmount4(value == 0 ? "" : value);
   };
 
-  const queryData = async () => {
+  const queryData = useCallback(async () => {
     if (systemWeek && lockTotalWeight) {
+      console.log("getting");
       const locks = await getAccountActiveLocks();
       setIsLocks(
         locks.lockData.amount > 0 || locks.frozenAmount > 0 ? true : false
@@ -146,7 +147,7 @@ export default function Vote() {
     // const registeredLocks = await incentiveVotingQuery.getAccountRegisteredLocks(account);
     // console.log("locks--", registeredLocks)
     // setRegisteredLocks(Number(registeredLocks[0]));
-  };
+  }, [systemWeek, lockTotalWeight]);
 
   useEffect(() => {
     if (accountWeight && totalWeight) {
@@ -154,13 +155,9 @@ export default function Vote() {
     }
   }, [totalWeight, accountWeight]);
 
-  let timerLoading = useRef(null);
+  // let timerLoading = useRef(null);
   useEffect(() => {
     queryData();
-    timerLoading.current = setInterval(() => {
-      queryData();
-    }, 2000);
-    return () => clearInterval(timerLoading.current);
   }, [systemWeek, lockTotalWeight]);
 
   useEffect(() => {

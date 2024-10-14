@@ -17,6 +17,7 @@ export default function InitialDeposit({ address }) {
     setCurrentWaitInfo,
     currentState,
     approve,
+    getTokenBalance,
   } = useContext(BlockchainContext);
 
   const [ratioType, setRatioType] = useState("Custom");
@@ -30,6 +31,7 @@ export default function InitialDeposit({ address }) {
   const [isPayable, setIsPayable] = useState(false);
   const [deposits, setDeposits] = useState(0);
   const [collateralAddr, setCollateralAddr] = useState("");
+  const [collateralBalance, setCollateralBalance] = useState(0);
   const [debt, setDebt] = useState(0);
   const [status, setStatus] = useState(0);
   const [txHash, setTxHash] = useState("");
@@ -47,12 +49,21 @@ export default function InitialDeposit({ address }) {
   const price = collateralPrices[address];
 
   useEffect(() => {
-    setCollateral(collaterals[address]);
-    setDeposits(userTroves[address]?.deposits || 0);
-    setDebt(userTroves[address]?.debt || 0);
-    setStatus(userTroves[address]?.status || 0);
-    setCollateralAddr(collaterals[address]?.collateral.address);
-    setIsPayable(collaterals[address]?.collateral.payable);
+    async function getData() {
+      if (userTroves[address] && collaterals[address]) {
+        setCollateral(collaterals[address]);
+        setDeposits(userTroves[address]?.deposits || 0);
+        setDebt(userTroves[address]?.debt || 0);
+        setStatus(userTroves[address]?.status || 0);
+        setCollateralAddr(collaterals[address]?.collateral.address);
+        setIsPayable(collaterals[address]?.collateral.payable);
+        const tokenBalance = !collaterals[address]?.collateral.payable
+          ? await getTokenBalance(collaterals[address]?.collateral.address)
+          : 0;
+        setCollateralBalance(tokenBalance);
+      }
+    }
+    getData();
   }, [address, collaterals, userTroves]);
 
   useEffect(() => {
@@ -131,7 +142,8 @@ export default function InitialDeposit({ address }) {
 
   const changeCollAmount = async (e) => {
     const value = Number(e.target.value);
-    const maxBalance = balance - 1 > 0 ? balance - 1 : 0;
+    const balanceValue = isPayable ? balance : collateralBalance;
+    const maxBalance = balanceValue - 1 > 0 ? balanceValue - 1 : 0;
     if (value < maxBalance) {
       setCollAmount(value == 0 ? "" : value);
     } else {
@@ -291,7 +303,10 @@ export default function InitialDeposit({ address }) {
               <div className={styles.miniTitle}>
                 <span>Enter amount</span>
                 <span style={{ fontSize: "12px" }}>
-                  Balance {Number(Number(balance).toFixed(4)).toLocaleString()}{" "}
+                  Balance{" "}
+                  {Number(
+                    Number(isPayable ? balance : collateralBalance).toFixed(4)
+                  ).toLocaleString()}{" "}
                   ${collateral?.collateral?.name}
                 </span>
               </div>

@@ -1,11 +1,8 @@
 import { http, createConfig } from "wagmi";
 import { sapphire, sapphireTestnet } from "wagmi/chains";
 import { injected, coinbaseWallet } from "wagmi/connectors";
-import {
-  injectedWithSapphire,
-  sapphireHttpTransport,
-} from "@oasisprotocol/sapphire-wagmi-v2";
-import { defineChain } from "viem";
+import { sapphireHttpTransport } from "@oasisprotocol/sapphire-wagmi-v2";
+// import { defineChain } from "viem";
 
 // const zkBtc = defineChain({
 //   id: 0x12585a9,
@@ -25,10 +22,9 @@ export const config = createConfig({
   // chains: [sapphire, zkBtc, sapphireTestnet],
   chains: [sapphire, sapphireTestnet],
   // connectors: [injectedWithSapphire(), coinbaseWallet()],
-  connectors: [injectedWithSapphire()],
+  connectors: [injected(), coinbaseWallet()],
   transports: {
     [sapphire.id]: sapphireHttpTransport(),
     [sapphireTestnet.id]: sapphireHttpTransport(),
-    // [zkBtc.id]: http(),
   },
 });

@@ -32,6 +32,7 @@ import IncentiveVotingABI from "../abi/IncentiveVoting";
 import BitLpTokenABI from "../abi/BitLpTokenPool";
 import { fromBigNumber } from "../utils/helpers";
 import BigNumber from "bignumber.js";
+import * as sapphire from "@oasisprotocol/sapphire-paratime";
 
 export const BlockchainContext = createContext({
   // STATES
@@ -43,8 +44,6 @@ export const BlockchainContext = createContext({
   systemTVL: 0,
   userTroves: {},
   collateralPrices: {},
-  prev: "",
-  next: "",
   bitUSDBalance: 0,
   signatureToken: {},
   signatureTrove: {},
@@ -67,40 +66,40 @@ export const BlockchainContext = createContext({
   systemWeek: 0,
 
   // FUNCTIONS
-  signTrove: () => {},
-  setSignatureTrove: () => {},
-  checkAuth: () => {},
-  checkAuthToken: () => {},
-  getData: () => {},
-  getTrove: () => {},
-  openTrove: () => {},
-  signDebtToken: () => {},
-  getRosePrice: () => {},
-  getWithdrawWithPenaltyAmounts: () => {},
-  setCurrentState: () => {},
-  setCurrentWaitInfo: () => {},
-  approve: () => {},
-  addColl: () => {},
-  getTokenBalance: () => {},
-  withdrawColl: () => {},
-  repayDebt: () => {},
-  closeTrove: () => {},
+  signTrove: async () => {},
+  setSignatureTrove: async () => {},
+  checkAuth: async () => {},
+  checkAuthToken: async () => {},
+  getData: async () => {},
+  getTrove: async () => {},
+  openTrove: async () => {},
+  signDebtToken: async () => {},
+  getRosePrice: async () => {},
+  getWithdrawWithPenaltyAmounts: async () => {},
+  setCurrentState: async () => {},
+  setCurrentWaitInfo: async () => {},
+  approve: async () => {},
+  addColl: async () => {},
+  getTokenBalance: async () => {},
+  withdrawColl: async () => {},
+  repayDebt: async () => {},
+  closeTrove: async () => {},
   provideToSP: async () => {},
-  withdrawFromSP: () => {},
-  claimCollateralGains: () => {},
-  adjustTrove: () => {},
+  withdrawFromSP: async () => {},
+  claimCollateralGains: async () => {},
+  adjustTrove: async () => {},
   batchClaimRewards: async () => {},
-  lockToken: () => {},
-  freeze: () => {},
-  unfreeze: () => {},
-  withdrawWithPenalty: () => {},
-  getAccountActiveLocks: () => {},
-  getAccountBalances: () => {},
-  getAccountCurrentVotes: () => {},
-  getTotalWeightAt: () => {},
-  weeklyEmissions: () => {},
-  getReceiverWeightAt: () => {},
-  registerAccountWeightAndVote: () => {},
+  lockToken: async () => {},
+  freeze: async () => {},
+  unfreeze: async () => {},
+  withdrawWithPenalty: async () => {},
+  getAccountActiveLocks: async () => {},
+  getAccountBalances: async () => {},
+  getAccountCurrentVotes: async () => {},
+  getTotalWeightAt: async () => {},
+  weeklyEmissions: async () => {},
+  getReceiverWeightAt: async () => {},
+  registerAccountWeightAndVote: async () => {},
   bitGovLpData: async () => {},
   bitUsdLpData: async () => {},
   approveBitGovLp: async () => {},
@@ -133,8 +132,6 @@ export const BlockchainContextProvider = ({ children }) => {
   const [userTroves, setUserTroves] = useState({});
   const [systemTVL, setSystemTVL] = useState(0);
   const [collateralPrices, setCollateralPrices] = useState({});
-  const [prev, setPrev] = useState("");
-  const [next, setNext] = useState("");
   const [bitUSDBalance, setBitUSDBalance] = useState(0);
   const [bitUSDCirculation, setBitUSDCirculation] = useState(0);
   const [stabilityPool, setStabilityPool] = useState({});
@@ -218,7 +215,7 @@ export const BlockchainContextProvider = ({ children }) => {
     const incentiveVoting = new ethers.Contract(
       addresses.incentiveVoting[account.chainId],
       IncentiveVotingABI,
-      signer
+      sapphire.wrap(signer)
     );
 
     const tx = await incentiveVoting.registerAccountWeightAndVote(
@@ -233,7 +230,7 @@ export const BlockchainContextProvider = ({ children }) => {
     const tokenLocker = new ethers.Contract(
       addresses.tokenLocker[account.chainId],
       TokenLockerABI,
-      signer
+      sapphire.wrap(signer)
     );
 
     const tx = await tokenLocker.withdrawWithPenalty(value);
@@ -244,7 +241,7 @@ export const BlockchainContextProvider = ({ children }) => {
     const tokenLocker = new ethers.Contract(
       addresses.tokenLocker[account.chainId],
       TokenLockerABI,
-      signer
+      sapphire.wrap(signer)
     );
 
     const tx = await tokenLocker.unfreeze(true);
@@ -266,7 +263,7 @@ export const BlockchainContextProvider = ({ children }) => {
     const tokenLocker = new ethers.Contract(
       addresses.tokenLocker[account.chainId],
       TokenLockerABI,
-      signer
+      sapphire.wrap(signer)
     );
 
     const tx = await tokenLocker.lock(account.address, amount, weeks);
@@ -277,7 +274,7 @@ export const BlockchainContextProvider = ({ children }) => {
     const vault = new ethers.Contract(
       addresses.vault[account.chainId],
       VaultABI,
-      signer
+      sapphire.wrap(signer)
     );
 
     const tx = await vault.batchClaimRewards(
@@ -298,7 +295,7 @@ export const BlockchainContextProvider = ({ children }) => {
       const bitUsdLP = new ethers.Contract(
         addresses.bitGovDeposit[account.chainId],
         BitLpTokenABI,
-        signer
+        sapphire.wrap(signer)
       );
 
       const tx = await bitUsdLP.withdraw(account.address, amount);
@@ -313,7 +310,7 @@ export const BlockchainContextProvider = ({ children }) => {
       const bitGovLP = new ethers.Contract(
         addresses.bitGovDeposit[account.chainId],
         BitLpTokenABI,
-        signer
+        sapphire.wrap(signer)
       );
 
       const tx = await bitGovLP.deposit(account.address, amount);
@@ -328,7 +325,7 @@ export const BlockchainContextProvider = ({ children }) => {
       const bitGovLp = new ethers.Contract(
         addresses.bitGovLp[account.chainId],
         BitGovABI, // JUST TO USE THE ERC20 INTERFACE,
-        signer
+        sapphire.wrap(signer)
       );
 
       const tx = await bitGovLp.approve(
@@ -346,7 +343,7 @@ export const BlockchainContextProvider = ({ children }) => {
       const bitUsdLP = new ethers.Contract(
         addresses.bitUsdDeposit[account.chainId],
         BitLpTokenABI,
-        signer
+        sapphire.wrap(signer)
       );
 
       const tx = await bitUsdLP.deposit(account.address, amount);
@@ -361,7 +358,7 @@ export const BlockchainContextProvider = ({ children }) => {
       const bitUsdLP = new ethers.Contract(
         addresses.bitUsdDeposit[account.chainId],
         BitLpTokenABI,
-        signer
+        sapphire.wrap(signer)
       );
 
       const tx = await bitUsdLP.withdraw(account.address, amount);
@@ -376,7 +373,7 @@ export const BlockchainContextProvider = ({ children }) => {
       const bitUsdLp = new ethers.Contract(
         addresses.bitUsdLp[account.chainId],
         BitGovABI, // JUST TO USE THE ERC20 INTERFACE,
-        signer
+        sapphire.wrap(signer)
       );
 
       const tx = await bitUsdLp.approve(
@@ -417,8 +414,11 @@ export const BlockchainContextProvider = ({ children }) => {
       const borrowerOps = new ethers.Contract(
         addresses.borrowerOps[account.chainId],
         BorrowerOperationsABI,
-        signer
+        sapphire.wrap(signer)
       );
+
+      const prev = await getPrev(collaterals[address].sortedTroves);
+      const next = await getNext(collaterals[address].sortedTroves);
 
       const tx = await borrowerOps.openTrove(
         address,
@@ -441,8 +441,11 @@ export const BlockchainContextProvider = ({ children }) => {
       const borrowerOps = new ethers.Contract(
         addresses.borrowerOps[account.chainId],
         BorrowerOperationsABI,
-        signer
+        sapphire.wrap(signer)
       );
+
+      const prev = await getPrev(collaterals[address].sortedTroves);
+      const next = await getNext(collaterals[address].sortedTroves);
 
       const tx = await borrowerOps.addColl(
         address,
@@ -464,8 +467,11 @@ export const BlockchainContextProvider = ({ children }) => {
       const borrowerOps = new ethers.Contract(
         addresses.borrowerOps[account.chainId],
         BorrowerOperationsABI,
-        signer
+        sapphire.wrap(signer)
       );
+
+      const prev = await getPrev(collaterals[address].sortedTroves);
+      const next = await getNext(collaterals[address].sortedTroves);
 
       const tx = await borrowerOps.withdrawColl(
         address,
@@ -485,8 +491,11 @@ export const BlockchainContextProvider = ({ children }) => {
       const borrowerOps = new ethers.Contract(
         addresses.borrowerOps[account.chainId],
         BorrowerOperationsABI,
-        signer
+        sapphire.wrap(signer)
       );
+
+      const prev = await getPrev(collaterals[address].sortedTroves);
+      const next = await getNext(collaterals[address].sortedTroves);
 
       const tx = await borrowerOps.repayDebt(
         address,
@@ -507,7 +516,7 @@ export const BlockchainContextProvider = ({ children }) => {
       const borrowerOps = new ethers.Contract(
         addresses.borrowerOps[account.chainId],
         BorrowerOperationsABI,
-        signer
+        sapphire.wrap(signer)
       );
 
       const tx = await borrowerOps.closeTrove(address, account.address);
@@ -522,7 +531,7 @@ export const BlockchainContextProvider = ({ children }) => {
       const stabilityPool = new ethers.Contract(
         addresses.stabilityPool[account.chainId],
         StabilityPoolABI,
-        signer
+        sapphire.wrap(signer)
       );
 
       const tx = await stabilityPool.provideToSP(amount);
@@ -537,7 +546,7 @@ export const BlockchainContextProvider = ({ children }) => {
       const stabilityPool = new ethers.Contract(
         addresses.stabilityPool[account.chainId],
         StabilityPoolABI,
-        signer
+        sapphire.wrap(signer)
       );
 
       const tx = await stabilityPool.withdrawFromSP(amount);
@@ -552,7 +561,7 @@ export const BlockchainContextProvider = ({ children }) => {
       const stabilityPool = new ethers.Contract(
         addresses.stabilityPool[account.chainId],
         StabilityPoolABI,
-        signer
+        sapphire.wrap(signer)
       );
 
       const count = Object.keys(collaterals).length;
@@ -571,8 +580,11 @@ export const BlockchainContextProvider = ({ children }) => {
       const borrowerOps = new ethers.Contract(
         addresses.borrowerOps[account.chainId],
         BorrowerOperationsABI,
-        signer
+        sapphire.wrap(signer)
       );
+
+      const prev = await getPrev(collaterals[address].sortedTroves);
+      const next = await getNext(collaterals[address].sortedTroves);
 
       const tx = await borrowerOps.adjustTrove(
         address,
@@ -606,18 +618,16 @@ export const BlockchainContextProvider = ({ children }) => {
       setBalance(fromBigNumber(result.data.value));
       await getSystemInfo();
       await getCollaterals();
-      await getNext();
-      await getPrev();
       await getBitUSDBalance();
       await getBitGovBalance();
       await getBitUSDCirculation();
       await getStabilityPoolData();
       await getBoostAmount();
-      await getClaimableRewards();
-      await getAccountWeight();
-      await getAccountBalances();
-      // await getAccountActiveLocks();
-      await getTotalWeight();
+      // COMMENTED OUT UNTIL WE HAVE BITGOV AND REWARDS
+      // await getClaimableRewards();
+      // await getAccountWeight();
+      // await getAccountBalances();
+      // await getTotalWeight();
     }
   }, [
     account.address,
@@ -844,17 +854,18 @@ export const BlockchainContextProvider = ({ children }) => {
       functionName: "accountDeposits",
       args: [account.address],
     });
-    const earned = await publicClient.readContract({
-      abi: VaultABI,
-      address: addresses.vault[account.chainId],
-      functionName: "claimableRewardAfterBoost",
-      args: [
-        account.address,
-        account.address,
-        "0x0000000000000000000000000000000000000000",
-        addresses.stabilityPool[account.chainId],
-      ],
-    });
+    // COMMENTED OUT UNLESS WE HAVE REWARDS
+    // const earned = await publicClient.readContract({
+    //   abi: VaultABI,
+    //   address: addresses.vault[account.chainId],
+    //   functionName: "claimableRewardAfterBoost",
+    //   args: [
+    //     account.address,
+    //     account.address,
+    //     "0x0000000000000000000000000000000000000000",
+    //     addresses.stabilityPool[account.chainId],
+    //   ],
+    // });
     const depositorCollateralGain = await publicClient.readContract({
       abi: StabilityPoolABI,
       address: addresses.stabilityPool[account.chainId],
@@ -867,11 +878,9 @@ export const BlockchainContextProvider = ({ children }) => {
       balance: fromBigNumber(stabilityPoolBalance?.data?.value),
       rewardRate: fromBigNumber(rewardRate),
       accountDeposits: fromBigNumber(accountDeposits[0]),
-      earned: fromBigNumber(earned[0]),
+      // earned: fromBigNumber(earned[0]), // COMMENTED OUT UNLESS WE HAVE REWARDS
+      earned: 0,
       depositorCollateralGain: fromBigNumber(depositorCollateralGain[0]),
-      // depositorCollateralGain: depositorCollateralGain.map((gain) => {
-      //   return fromBigNumber(gain);
-      // }),
     });
   };
 
@@ -976,31 +985,28 @@ export const BlockchainContextProvider = ({ children }) => {
     setBitUSDCirculation(fromBigNumber(circulation));
   };
 
-  const getPrev = async () => {
+  const getPrev = async (sortedTroves) => {
     const prev = await publicClient.readContract({
       abi: SortedTrovesABI,
-      address: addresses.sortedTroves[account.chainId],
+      address: sortedTroves,
       functionName: "getPrev",
       args: [account.address],
     });
-    setPrev(prev);
+    return prev;
   };
 
-  const getNext = async () => {
+  const getNext = async (sortedTroves) => {
     const next = await publicClient.readContract({
       abi: SortedTrovesABI,
-      address: addresses.sortedTroves[account.chainId],
+      address: sortedTroves,
       functionName: "getNext",
       args: [account.address],
     });
-    setNext(next);
+    return next;
   };
 
   const getTrove = async (troveManagerAddr) => {
     try {
-      const userTrovesCache = { ...userTroves };
-      console.log("cache", { troveManagerAddr, userTrovesCache });
-
       if (account.chainId !== 23294 && account.chainId !== 23295) {
         const trove = await publicClient.readContract({
           abi: TroveManagerABI,
@@ -1011,7 +1017,7 @@ export const BlockchainContextProvider = ({ children }) => {
 
         const debt = fromBigNumber(trove[3]);
 
-        userTrovesCache[troveManagerAddr] = {
+        return {
           deposits: fromBigNumber(trove[2]),
           debt,
           status: trove[5],
@@ -1026,14 +1032,13 @@ export const BlockchainContextProvider = ({ children }) => {
 
         const debt = fromBigNumber(trove[0]);
 
-        userTrovesCache[troveManagerAddr] = {
+        return {
           deposits: fromBigNumber(trove[1]),
           debt,
           status: trove[3],
         };
       }
-      console.log("cache 2", userTrovesCache);
-      setUserTroves(userTrovesCache);
+      // setUserTroves(userTrovesCache);
     } catch (error) {
       console.log(error);
     }
@@ -1044,6 +1049,7 @@ export const BlockchainContextProvider = ({ children }) => {
       let totalTVL = 0;
       let collateralsCache = {};
       let collateralPricesCache = { ...collateralPrices };
+      let userTrovesCache = { ...userTroves };
 
       const count = await publicClient.readContract({
         abi: FactoryABI,
@@ -1115,13 +1121,20 @@ export const BlockchainContextProvider = ({ children }) => {
           args: [],
         });
 
+        const sortedTroves = await publicClient.readContract({
+          abi: TroveManagerABI,
+          address: address,
+          functionName: "sortedTroves",
+          args: [],
+        });
+
         collateralPricesCache[address] = await getCollateralPrice(collateral);
 
         const tvl =
           fromBigNumber(systemBalances[0]) * fromBigNumber(systemBalances[2]);
         totalTVL += tvl;
 
-        await getTrove(address);
+        userTrovesCache[address] = await getTrove(address);
 
         collateralsCache[address] = {
           mcr: fromBigNumber(mcr) * 100,
@@ -1135,6 +1148,7 @@ export const BlockchainContextProvider = ({ children }) => {
             payable:
               collateral === "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
           },
+          sortedTroves,
           maxSystemDebt: fromBigNumber(maxSystemDebt),
           rewardRate: fromBigNumber(rewardRate),
           deploymentTime: Number(deploymentTime),
@@ -1144,6 +1158,7 @@ export const BlockchainContextProvider = ({ children }) => {
       setCollaterals(collateralsCache);
       setSystemTVL(totalTVL);
       setCollateralPrices(collateralPricesCache);
+      setUserTroves(userTrovesCache);
 
       return collateralsCache;
     } catch (error) {
@@ -1296,8 +1311,6 @@ export const BlockchainContextProvider = ({ children }) => {
         getTrove,
         userTroves,
         collateralPrices,
-        prev,
-        next,
         openTrove,
         bitUSDBalance,
         signDebtToken,

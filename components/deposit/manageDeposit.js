@@ -160,7 +160,8 @@ export default function ManageDeposit({ address }) {
 
   const changeCollAmount = async (e) => {
     const value = Number(e.target.value);
-    const maxBalance = balance - 1 > 0 ? balance - 1 : 0;
+    const balanceValue = isPayable ? balance : collateralBalance;
+    const maxBalance = balanceValue - 1 > 0 ? balanceValue - 1 : 0;
     if (value < maxBalance) {
       setCollAmount(value == 0 ? "" : value);
     } else {
@@ -235,6 +236,7 @@ export default function ManageDeposit({ address }) {
       setCurrentState(true);
       setTxHash(tx);
     } catch (error) {
+      console.log(error);
       setCurrentState(false);
       tooltip.error({
         content:

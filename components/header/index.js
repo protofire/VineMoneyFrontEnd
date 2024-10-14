@@ -113,20 +113,20 @@ export default function Header(props) {
               >
                 <span>Earn</span>
               </Link>
-              <Link
+              {/* <Link
                 className={dappMenu == "Reward" ? `${styles.active}` : null}
                 href="/Reward"
                 rel="nofollow noopener noreferrer"
               >
                 <span>Reward</span>
-              </Link>
-              <Link
+              </Link> */}
+              {/* <Link
                 className={dappMenu == "Lock" ? `${styles.active}` : null}
                 href="/Lock"
                 rel="nofollow noopener noreferrer"
               >
                 <span>Lock</span>
-              </Link>
+              </Link> */}
               <Link
                 className={dappMenu == "Redeem" ? `${styles.active}` : null}
                 href="/Redeem"
@@ -134,13 +134,13 @@ export default function Header(props) {
               >
                 <span>Redeem</span>
               </Link>
-              <Link
+              {/* <Link
                 className={dappMenu == "Vote" ? `${styles.active}` : null}
                 href="/Vote"
                 rel="nofollow noopener noreferrer"
               >
                 <span>Vote</span>
-              </Link>
+              </Link> */}
             </div>
           ) : (
             <div className={styles.list}>

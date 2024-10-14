@@ -37,6 +37,7 @@ export default function Earn() {
     approveBitUsdLp,
     stakeBitUsdLP,
     withdrawBitUsdLP,
+    getTokenBalance,
   } = useContext(BlockchainContext);
 
   const [tvl, setTvl] = useState(0);
@@ -137,6 +138,7 @@ export default function Earn() {
       setAllowance2(bitUsdLp.allowance);
       setUnStakeLpBalance2(bitUsdLp.depositBalance);
       // FIGURE IT OUT HOW TO GET DEBT TOKEN BALANCE OF THE POOL
+      // const usdcBalance = await getTokenBalance()
       setVUSDLpBalance(0);
 
       //bitUSD Minting
