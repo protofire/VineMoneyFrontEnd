@@ -1,6 +1,6 @@
 import { http, createConfig } from "wagmi";
 import { sapphire, sapphireTestnet } from "wagmi/chains";
-import { injected, coinbaseWallet } from "wagmi/connectors";
+import { coinbaseWallet, metaMask } from "wagmi/connectors";
 import { sapphireHttpTransport } from "@oasisprotocol/sapphire-wagmi-v2";
 // import { defineChain } from "viem";
 
@@ -22,7 +22,7 @@ export const config = createConfig({
   // chains: [sapphire, zkBtc, sapphireTestnet],
   chains: [sapphire, sapphireTestnet],
   // connectors: [injectedWithSapphire(), coinbaseWallet()],
-  connectors: [injected(), coinbaseWallet()],
+  connectors: [metaMask(), coinbaseWallet()],
   transports: {
     [sapphire.id]: sapphireHttpTransport(),
     [sapphireTestnet.id]: sapphireHttpTransport(),
