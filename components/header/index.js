@@ -46,6 +46,10 @@ export default function Header(props) {
 
   useEffect(() => {
     if (account.status === "connected" && menu !== "Home") {
+      // FOR STAGING ONLY / FOR PRODUCTION SHOULD BE OASIS SAPPHIRE MAINNET
+      if (account.chainId !== 23295) {
+        switchChain({ chainId: 23295 });
+      }
       setShowSignIn(!checkAuth());
       setShowSignInToken(!checkAuthToken());
     }
