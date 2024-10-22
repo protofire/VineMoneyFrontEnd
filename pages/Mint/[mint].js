@@ -5,6 +5,7 @@ import { useEffect, useState, useContext } from "react";
 import BigNumber from "bignumber.js";
 import Wait from "../../components/tooltip/wait";
 import tooltip from "../../components/tooltip";
+import Loading from "../../components/tooltip/loading";
 import DepositsAndDebt from "../../components/dapp/depositsAndDebt";
 import { useRouter } from "next/router";
 import { BlockchainContext } from "../../hook/blockchain";
@@ -528,6 +529,7 @@ export default function Mint() {
         </div>
       </div>
       {currentState ? <Wait></Wait> : null}
+      {collateral.mcr === 0 ? <Loading></Loading> : null}
       <Footer></Footer>
     </>
   );

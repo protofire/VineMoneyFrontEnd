@@ -6,7 +6,6 @@ import BigNumber from "bignumber.js";
 import Wait from "../components/tooltip/wait";
 import Loading from "../components/tooltip/loading";
 import tooltip from "../components/tooltip";
-// import { UserContext } from "../hook/user";
 import { BlockchainContext } from "../hook/blockchain";
 import { formatNumber } from "../utils/helpers";
 
@@ -18,6 +17,7 @@ export default function Redeem() {
   const [feeAmount, setFeeAmount] = useState(0);
   const [expectedCollateralReceived, setExpectedCollateralReceived] =
     useState(0);
+  const [rosePrice, setRosePrice] = useState(0);
   const [selectCollateral, setSelectedCollateral] = useState("");
   const [canRedeem, setCanRedeem] = useState(false);
 
@@ -28,9 +28,8 @@ export default function Redeem() {
     currentState,
     bitUSDBalance,
     collaterals,
+    redeemCollateral,
   } = useContext(BlockchainContext);
-
-  const rosePrice = getRosePrice();
 
   useEffect(() => {
     if (startTime) {
@@ -58,7 +57,7 @@ export default function Redeem() {
     queryData();
     timerLoading.current = setInterval(() => {
       queryData();
-    }, 2000);
+    }, 30000);
     return () => clearInterval(timerLoading.current);
   }, [collaterals]);
 
@@ -86,23 +85,23 @@ export default function Redeem() {
     setSelectedCollateral(item);
     const deploymentTime = collaterals[item].deploymentTime;
     const bootstrapPeriod = collaterals[item].bootstrapPeriod;
+    const baseRate = collaterals[item].baseRate;
+    const redemptionFeeFloor = collaterals[item].redemptionFeeFloor;
 
     setStartTime(Number(deploymentTime) + bootstrapPeriod);
     const nowDate = new Date();
     const nowTime = parseInt(nowDate.getTime() / 1000);
     setCanRedeem(nowTime > Number(deploymentTime) + bootstrapPeriod);
+    setFee(Number(redemptionFeeFloor) + Number(baseRate));
   };
 
   const queryData = async () => {
     if (Object.keys(collaterals).length !== 0) {
+      const price = getRosePrice();
+      setRosePrice(price);
       if (selectCollateral === "") {
         selectCollateralChange(Object.keys(collaterals)[0]);
       }
-
-      // setStartTime(Number(systemDeploymentTime) + Number(bootstrapPeriod));
-      // const redemptionFeeFloor = await troveManagerQuery.redemptionFeeFloor();
-      // const baseRate = await troveManagerQuery.baseRate();
-      setFee((Number(0) + Number(0)) / 1e18);
     }
   };
 
@@ -138,68 +137,42 @@ export default function Redeem() {
     }
   };
 
-  // const redeemCollateral = async () => {
-  //   const redemptionHints =
-  //     await multiCollateralHintHelpersQuery.getRedemptionHints(
-  //       troveManager,
-  //       new BigNumber(amount).multipliedBy(1e18).toFixed(),
-  //       new BigNumber(rosePrice).multipliedBy(1e18).toFixed(),
-  //       0
-  //     );
-  //   const status =
-  //     Number(redemptionHints.truncatedDebtAmount._hex) ==
-  //     Number(new BigNumber(amount).multipliedBy(1e18).toFixed())
-  //       ? 1
-  //       : 0;
-  //   const prev = await sortedTrovesToken.getPrev(
-  //     redemptionHints.firstRedemptionHint
-  //   );
-  //   const next = await sortedTrovesToken.getNext(
-  //     redemptionHints.firstRedemptionHint
-  //   );
+  const redeem = async () => {
+    try {
+      const tx = await redeemCollateral(
+        selectCollateral,
+        new BigNumber(amount).multipliedBy(1e18).toFixed()
+      );
+      setCurrentWaitInfo({
+        type: "loading",
+        info:
+          "Redeem " + Number(amount.toFixed(4)).toLocaleString() + " bitUSD",
+      });
+      setCurrentState(true);
+      const result = await tx.wait();
+      setCurrentState(false);
+      if (result.status === 0) {
+        tooltip.error({
+          content:
+            "Transaction failed due to a network error. Please refresh the page and try again.",
+          duration: 5000,
+        });
+      } else {
+        tooltip.success({ content: "Successful", duration: 5000 });
+      }
+      setAmount("");
+    } catch (error) {
+      console.log(error);
+      setCurrentState(false);
+      tooltip.error({
+        content:
+          "Transaction failed due to a network error. Please refresh the page and try again.",
+        duration: 5000,
+      });
+    }
+  };
 
-  //   try {
-  //     const tx = await troveManagerMain.redeemCollateral(
-  //       new BigNumber(amount).multipliedBy(1e18).toFixed(),
-  //       redemptionHints.firstRedemptionHint,
-  //       prev,
-  //       next,
-  //       new BigNumber(redemptionHints.partialRedemptionHintNICR._hex).toFixed(),
-  //       status,
-  //       new BigNumber(1e18).toFixed()
-  //     );
-  //     setCurrentWaitInfo({
-  //       type: "loading",
-  //       info:
-  //         "Redeem " + Number(amount.toFixed(4)).toLocaleString() + " bitUSD",
-  //     });
-  //     setCurrentState(true);
-  //     const result = await tx.wait();
-  //     setCurrentState(false);
-  //     if (result.status === 0) {
-  //       tooltip.error({
-  //         content:
-  //           "Transaction failed due to a network error. Please refresh the page and try again.",
-  //         duration: 5000,
-  //       });
-  //     } else {
-  //       tooltip.success({ content: "Successful", duration: 5000 });
-  //     }
-  //     setAmount("");
-  //   } catch (error) {
-  //     console.log(error);
-  //     setCurrentState(false);
-  //     tooltip.error({
-  //       content:
-  //         "Transaction failed due to a network error. Please refresh the page and try again.",
-  //       duration: 5000,
-  //     });
-  //   }
-  // };
-
-  const redeemCollateral = async () => {};
-
-  const redeem = () => {
+  const redeemWrapper = () => {
     if (!showRedeem) {
       tooltip.error({
         content: "Redemption should be available in " + getCountDown(),
@@ -210,7 +183,7 @@ export default function Redeem() {
     if (!amount) {
       return;
     }
-    redeemCollateral();
+    redeem();
   };
 
   return (
@@ -312,13 +285,13 @@ export default function Redeem() {
                       ? "button rightAngle height "
                       : "button rightAngle height disable"
                   }
-                  onClick={() => redeem()}
+                  onClick={() => redeemWrapper()}
                 >
                   Redeem
                 </div>
                 <div
                   className="button rightAngle height disable"
-                  onClick={() => redeem()}
+                  onClick={() => redeemWrapper()}
                 >
                   Redeem
                 </div>

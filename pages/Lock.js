@@ -126,8 +126,8 @@ export default function Lock() {
   useEffect(() => {
     if (accountWeight && totalWeight) {
       setAccountShare((Number(accountWeight) / Number(totalWeight)) * 100);
-      setLoading(false);
     }
+    setLoading(false);
   }, [totalWeight, accountWeight]);
 
   const changeClaimAmount = async (e) => {

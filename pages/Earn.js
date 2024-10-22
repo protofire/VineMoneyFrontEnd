@@ -11,8 +11,12 @@ import { formatNumber } from "../utils/helpers";
 import BigNumber from "bignumber.js";
 import { addresses } from "../utils/addresses";
 import { useAccount } from "wagmi";
+import { useRouter } from "next/router";
+import { collateralNames } from "../utils/collateralNames";
 
 export default function Earn() {
+  const router = useRouter();
+
   const account = useAccount();
   const {
     bitUSDCirculation,
@@ -37,7 +41,7 @@ export default function Earn() {
     approveBitUsdLp,
     stakeBitUsdLP,
     withdrawBitUsdLP,
-    getTokenBalance,
+    // getTokenBalance,
   } = useContext(BlockchainContext);
 
   const [tvl, setTvl] = useState(0);
@@ -68,7 +72,7 @@ export default function Earn() {
   //bitUSD/USDC LP
   const [baseAPR4, setBaseAPR4] = useState(0);
   const [USDCtotalSupply, setUSDCtotalSupply] = useState(0);
-  const [depositorCollateralGain, setDepositorCollateralGain] = useState(0);
+  const [depositorCollateralGain, setDepositorCollateralGain] = useState([]);
   const [vUSDBaseApr1, setvUSDBaseApr1] = useState(0);
   const [vUSDBaseApr2, setvUSDBaseApr2] = useState(0);
   const [vUSDBaseApr3, setvUSDBaseApr3] = useState(0);
@@ -214,9 +218,10 @@ export default function Earn() {
         setMaxBalance(bitUSDBalance);
       } else if (changeType == "Withdraw") {
         setMaxBalance(Number(accountDeposits));
-      } else {
-        setMaxBalance(Number(depositorCollateralGain));
       }
+      // else {
+      //   setMaxBalance(Number(depositorCollateralGain));
+      // }
     }
   }, [
     typeName,
@@ -924,13 +929,39 @@ export default function Earn() {
                     ) : null}
                   </div>
                   <div className="balance">
-                    <p>
-                      {changeType} {coin}
-                    </p>
-                    <span>
-                      {changeType == "Claim" ? null : "MAX "}{" "}
-                      {Number(maxBalance.toFixed(4)).toLocaleString()} {coin}
-                    </span>
+                    {typeName == "Stability Pool" && changeType == "Claim" ? (
+                      <>
+                        {depositorCollateralGain.map((item, index) => (
+                          <div className="value">
+                            <p>
+                              {changeType} $
+                              {
+                                collaterals[Object.keys(collaterals)[index]]
+                                  ?.collateral?.name
+                              }
+                            </p>
+                            <span>
+                              {Number(item).toLocaleString()} $
+                              {
+                                collaterals[Object.keys(collaterals)[index]]
+                                  ?.collateral?.name
+                              }
+                            </span>
+                          </div>
+                        ))}
+                      </>
+                    ) : (
+                      <div className="value">
+                        <p>
+                          {changeType} {coin}
+                        </p>
+                        <span>
+                          {changeType == "Claim" ? null : "MAX "}{" "}
+                          {Number(maxBalance.toFixed(4)).toLocaleString()}{" "}
+                          {coin}
+                        </span>
+                      </div>
+                    )}
                   </div>
                   {changeType == "Claim" ? null : (
                     <>

@@ -14,7 +14,7 @@ import {
   useWalletClient,
   useConnectorClient,
 } from "wagmi";
-import { addresses } from "../utils/addresses";
+import { addresses, rpc } from "../utils/addresses";
 import { collateralNames } from "../utils/collateralNames";
 import TroveManagerGettersABI from "../abi/TroveManagerGetters";
 import TroveManagerABI from "../abi/TroveManager";
@@ -30,6 +30,7 @@ import BitGovABI from "../abi/token";
 import TokenLockerABI from "../abi/tokenLocker";
 import IncentiveVotingABI from "../abi/IncentiveVoting";
 import BitLpTokenABI from "../abi/BitLpTokenPool";
+import MultiCollateralHintHelpersABI from "../abi/MultiCollateralHintHelpers";
 import { fromBigNumber } from "../utils/helpers";
 import BigNumber from "bignumber.js";
 import * as sapphire from "@oasisprotocol/sapphire-paratime";
@@ -108,6 +109,10 @@ export const BlockchainContext = createContext({
   approveBitUsdLp: async () => {},
   withdrawBitUsdLP: async () => {},
   stakeBitUsdLP: async () => {},
+  redeemCollateral: async () => {},
+  getRedemptionHints: async () => {},
+  getData: async () => {},
+  setLock: () => {},
 });
 
 export const BlockchainContextProvider = ({ children }) => {
@@ -156,26 +161,30 @@ export const BlockchainContextProvider = ({ children }) => {
   // GET DATA LOCK TO AVOID TOO MANY CALLS
   const [lock, setLock] = useState(false);
 
-  const clientToSigner = (client) => {
+  const clientToSigner = (client, query) => {
     const { account, chain, transport } = client;
     const network = {
       chainId: chain.id,
       name: chain.name,
     };
-    const provider = new ethers.providers.Web3Provider(transport, network);
-    const signer = provider.getSigner(account.address);
+
+    const provider = query
+      ? new ethers.providers.JsonRpcProvider(rpc[chain.id])
+      : new ethers.providers.Web3Provider(transport, network);
+    const signer = !query ? provider.getSigner(account.address) : provider;
     return signer;
   };
 
-  const useEthersSigner = () => {
+  const useEthersSigner = (query = false) => {
     const { data: client } = useConnectorClient();
     return useMemo(
-      () => (client ? clientToSigner(client) : undefined),
+      () => (client ? clientToSigner(client, query) : undefined),
       [client]
     );
   };
 
   const signer = useEthersSigner();
+  const signerQuery = useEthersSigner(true);
 
   // USE EFFECTS
 
@@ -211,6 +220,41 @@ export const BlockchainContextProvider = ({ children }) => {
   }, [Object.keys(userTroves)]);
 
   // WRITE FUNCTIONS
+  const redeemCollateral = async (troveAddress, amount) => {
+    try {
+      const troveManager = new ethers.Contract(
+        troveAddress,
+        TroveManagerABI,
+        sapphire.wrap(signer)
+      );
+
+      const {
+        firstRedemptionHint,
+        partialRedemptionHintNICR,
+        truncatedDebtAmount,
+      } = await getRedemptionHints(troveAddress, amount);
+
+      const status = truncatedDebtAmount === amount ? 1 : 0;
+
+      const prev = await getPrev(firstRedemptionHint);
+      const next = await getNext(firstRedemptionHint);
+
+      const tx = await troveManager.redeemCollateral(
+        amount,
+        firstRedemptionHint,
+        prev,
+        next,
+        partialRedemptionHintNICR,
+        status,
+        new BigNumber(1e18).toFixed()
+      );
+
+      return tx;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const registerAccountWeightAndVote = async (data) => {
     const incentiveVoting = new ethers.Contract(
       addresses.incentiveVoting[account.chainId],
@@ -624,10 +668,10 @@ export const BlockchainContextProvider = ({ children }) => {
       await getStabilityPoolData();
       await getBoostAmount();
       // COMMENTED OUT UNTIL WE HAVE BITGOV AND REWARDS
-      // await getClaimableRewards();
-      // await getAccountWeight();
-      // await getAccountBalances();
-      // await getTotalWeight();
+      await getClaimableRewards();
+      await getAccountWeight();
+      await getAccountBalances();
+      await getTotalWeight();
     }
   }, [
     account.address,
@@ -636,6 +680,33 @@ export const BlockchainContextProvider = ({ children }) => {
     lock,
     result?.data?.value,
   ]);
+
+  const getRedemptionHints = async (troveManager, amount) => {
+    const rosePrice = getRosePrice();
+    try {
+      const multiCollateralHintHelpers = new ethers.Contract(
+        addresses.multiCollateralHintHelpers[account.chainId],
+        MultiCollateralHintHelpersABI,
+        sapphire.wrap(signerQuery)
+      );
+
+      const hints = await multiCollateralHintHelpers.getRedemptionHints(
+        troveManager,
+        amount,
+        new BigNumber(rosePrice).multipliedBy(1e18).toFixed(),
+        0
+      );
+
+      return {
+        firstRedemptionHint: hints[0],
+        partialRedemptionHintNICR: fromBigNumber(hints[1]),
+        truncatedDebtAmount: fromBigNumber(hints[2]),
+      };
+    } catch (error) {
+      console.log("error", error);
+      throw error;
+    }
+  };
 
   const bitUsdLpData = async () => {
     const balanceLp = await publicClient.readContract({
@@ -855,17 +926,17 @@ export const BlockchainContextProvider = ({ children }) => {
       args: [account.address],
     });
     // COMMENTED OUT UNLESS WE HAVE REWARDS
-    // const earned = await publicClient.readContract({
-    //   abi: VaultABI,
-    //   address: addresses.vault[account.chainId],
-    //   functionName: "claimableRewardAfterBoost",
-    //   args: [
-    //     account.address,
-    //     account.address,
-    //     "0x0000000000000000000000000000000000000000",
-    //     addresses.stabilityPool[account.chainId],
-    //   ],
-    // });
+    const earned = await publicClient.readContract({
+      abi: VaultABI,
+      address: addresses.vault[account.chainId],
+      functionName: "claimableRewardAfterBoost",
+      args: [
+        account.address,
+        account.address,
+        "0x0000000000000000000000000000000000000000",
+        addresses.stabilityPool[account.chainId],
+      ],
+    });
     const depositorCollateralGain = await publicClient.readContract({
       abi: StabilityPoolABI,
       address: addresses.stabilityPool[account.chainId],
@@ -878,9 +949,9 @@ export const BlockchainContextProvider = ({ children }) => {
       balance: fromBigNumber(stabilityPoolBalance?.data?.value),
       rewardRate: fromBigNumber(rewardRate),
       accountDeposits: fromBigNumber(accountDeposits[0]),
-      // earned: fromBigNumber(earned[0]), // COMMENTED OUT UNLESS WE HAVE REWARDS
+      earned: fromBigNumber(earned[0]), // COMMENTED OUT UNLESS WE HAVE REWARDS
       earned: 0,
-      depositorCollateralGain: fromBigNumber(depositorCollateralGain[0]),
+      depositorCollateralGain: depositorCollateralGain,
     });
   };
 
@@ -945,8 +1016,8 @@ export const BlockchainContextProvider = ({ children }) => {
 
     return {
       lockData: {
-        amount: Number(locks[0][0].amount),
-        weeksToUnlock: Number(locks[0][0].weeksToUnlock),
+        amount: Number(locks[0][0]?.amount || 0),
+        weeksToUnlock: Number(locks[0][0]?.weeksToUnlock || 0),
       },
       frozenAmount: Number(locks[1]),
     };
@@ -985,22 +1056,22 @@ export const BlockchainContextProvider = ({ children }) => {
     setBitUSDCirculation(fromBigNumber(circulation));
   };
 
-  const getPrev = async (sortedTroves) => {
+  const getPrev = async (sortedTroves, id = account.address) => {
     const prev = await publicClient.readContract({
       abi: SortedTrovesABI,
       address: sortedTroves,
       functionName: "getPrev",
-      args: [account.address],
+      args: [id],
     });
     return prev;
   };
 
-  const getNext = async (sortedTroves) => {
+  const getNext = async (sortedTroves, id = account.address) => {
     const next = await publicClient.readContract({
       abi: SortedTrovesABI,
       address: sortedTroves,
       functionName: "getNext",
-      args: [account.address],
+      args: [id],
     });
     return next;
   };
@@ -1038,7 +1109,6 @@ export const BlockchainContextProvider = ({ children }) => {
           status: trove[3],
         };
       }
-      // setUserTroves(userTrovesCache);
     } catch (error) {
       console.log(error);
     }
@@ -1120,6 +1190,18 @@ export const BlockchainContextProvider = ({ children }) => {
           functionName: "BOOTSTRAP_PERIOD",
           args: [],
         });
+        const redemptionFeeFloor = await publicClient.readContract({
+          abi: TroveManagerABI,
+          address: address,
+          functionName: "redemptionFeeFloor",
+          args: [],
+        });
+        const baseRate = await publicClient.readContract({
+          abi: TroveManagerABI,
+          address: address,
+          functionName: "baseRate",
+          args: [],
+        });
 
         const sortedTroves = await publicClient.readContract({
           abi: TroveManagerABI,
@@ -1153,6 +1235,8 @@ export const BlockchainContextProvider = ({ children }) => {
           rewardRate: fromBigNumber(rewardRate),
           deploymentTime: Number(deploymentTime),
           bootstrapPeriod: Number(BOOTSTRAP_PERIOD),
+          redemptionFeeFloor: fromBigNumber(redemptionFeeFloor),
+          baseRate: fromBigNumber(baseRate),
         };
       }
       setCollaterals(collateralsCache);
@@ -1367,6 +1451,10 @@ export const BlockchainContextProvider = ({ children }) => {
         approveBitUsdLp,
         stakeBitUsdLP,
         withdrawBitUsdLP,
+        redeemCollateral,
+        getRedemptionHints,
+        getData,
+        setLock,
       }}
     >
       {children}

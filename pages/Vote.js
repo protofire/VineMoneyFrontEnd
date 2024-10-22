@@ -161,6 +161,7 @@ export default function Vote() {
   }, [systemWeek, lockTotalWeight]);
 
   useEffect(() => {
+    setIsLoading(false);
     if (votes) {
       votes.forEach((element) => {
         if (Number(element.id) == 0) {
@@ -179,7 +180,6 @@ export default function Vote() {
           setVotes4(Number(element.points));
         }
       });
-      setIsLoading(false);
     }
   }, [votes]);
 

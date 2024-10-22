@@ -62,6 +62,8 @@ export default function ManageDeposit({ address }) {
     withdrawColl,
     repayDebt,
     closeTrove,
+    getData,
+    setLock,
   } = useContext(BlockchainContext);
 
   const { data: txReceipt, error: txError } = useWaitForTransactionReceipt({
@@ -70,7 +72,7 @@ export default function ManageDeposit({ address }) {
   });
 
   useEffect(() => {
-    async function getData() {
+    async function getDataWrapper() {
       if (userTroves[address] && collaterals[address]) {
         setCollateral(collaterals[address]);
         setDeposits(userTroves[address]?.deposits || 0);
@@ -84,7 +86,7 @@ export default function ManageDeposit({ address }) {
         setCollateralBalance(tokenBalance);
       }
     }
-    getData();
+    getDataWrapper();
   }, [address, collaterals, userTroves]);
 
   useEffect(() => {
@@ -277,6 +279,8 @@ export default function ManageDeposit({ address }) {
           tooltip.success({ content: "Successful", duration: 5000 });
         }
         setCollAmount("");
+        setLock(false);
+        await getData();
       } catch (error) {
         setCurrentState(false);
         tooltip.error({

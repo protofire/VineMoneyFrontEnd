@@ -18,6 +18,7 @@ export default function InitialDeposit({ address }) {
     currentState,
     approve,
     getTokenBalance,
+    getData,
   } = useContext(BlockchainContext);
 
   const [ratioType, setRatioType] = useState("Custom");
@@ -267,6 +268,7 @@ export default function InitialDeposit({ address }) {
       }
       setCollAmount("");
       setDebtAmount("");
+      await getData();
     } catch (error) {
       console.log(error);
       setCurrentState(false);

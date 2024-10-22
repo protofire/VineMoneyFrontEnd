@@ -647,10 +647,17 @@ input[type="radio"]:checked::after {
 }
 
 .balance {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  // justify-content: space-between;
   align-items: center;
   margin-bottom: 4px;
+
+  .value {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+  }
 
   p {
     color: #bdbdbd;
