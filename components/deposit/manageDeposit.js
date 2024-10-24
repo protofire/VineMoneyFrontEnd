@@ -457,8 +457,8 @@ export default function ManageDeposit({ address }) {
                   className={styles.mintBtn}
                   onClick={() =>
                     router.push({
-                      pathname: "/Mint/[address]",
-                      query: { address: address },
+                      pathname: "/Mint/[mint]",
+                      query: { mint: address },
                     })
                   }
                 >
